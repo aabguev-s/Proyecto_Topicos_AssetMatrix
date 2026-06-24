@@ -1,17 +1,4 @@
-// alphaVantageClient.ts
-import { BaseApiClient, ApiClientConfig } from './baseAPIClient';
-
-// 1. Crear una clase concreta que extienda BaseApiClient
-class AlphaVantageApiClient extends BaseApiClient {
-  constructor(config: ApiClientConfig) {
-    super(config);
-  }
-
-  // Exponer el método request como público si es necesario
-  async requestPublic<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    return this.request<T>(endpoint, options);
-  }
-}
+import { BaseAPIClient } from './baseAPIClient';
 
 interface GlobalQuoteRaw {
   '01. symbol'?: string;
@@ -39,23 +26,17 @@ export interface StockQuote {
 }
 
 export class AlphaVantageClient {
-  private readonly client: AlphaVantageApiClient;
-  private readonly apiKey: string;
+  private readonly client: BaseAPIClient;
 
   constructor(apiKey: string = process.env.ALPHA_VANTAGE_API_KEY || 'demo') {
-    this.apiKey = apiKey;
-    this.client = new AlphaVantageApiClient({
-      baseUrl: 'https://www.alphavantage.co',
-      apiKey: apiKey
-    });
+    this.client = new BaseAPIClient('https://www.alphavantage.co', { apikey: apiKey });
   }
 
   async getGlobalQuote(symbol: string): Promise<StockQuote> {
-    // Construir URL con parámetros
-    const endpoint = `/query?function=GLOBAL_QUOTE&symbol=${symbol.toUpperCase()}&apikey=${this.apiKey}`;
-    
-    // Usar el método público
-    const data = await this.client.requestPublic<AlphaVantageQuoteResponse>(endpoint);
+    const data = await this.client.get<AlphaVantageQuoteResponse>('/query', {
+      function: 'GLOBAL_QUOTE',
+      symbol: symbol.toUpperCase(),
+    });
 
     if (data.Note || data.Information) {
       throw new Error(data.Note || data.Information || 'Alpha Vantage API limit reached');
