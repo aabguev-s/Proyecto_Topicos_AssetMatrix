@@ -1,13 +1,12 @@
-import { Router } from 'express';
-import { CryptoController } from '../controllers/cryptoController';
-import { validate } from '../middlewares/validateMiddleware';
-import { createCryptoSchema, updateCryptoSchema, getCryptoParamsSchema } from '../schemas/cryptoSchema';
-
-const router = Router();
-const controller = new CryptoController();
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const cryptoController_1 = require("../controllers/cryptoController");
+const validateMiddleware_1 = require("../middlewares/validateMiddleware");
+const cryptoSchema_1 = require("../schemas/cryptoSchema");
+const router = (0, express_1.Router)();
+const controller = new cryptoController_1.CryptoController();
 // Rutas de Prueba. Serán reemplazadas por las rutas ya definidas en ../config/swagger.ts
-
 /**
  * @openapi
  * /api/cryptos:
@@ -41,9 +40,8 @@ const controller = new CryptoController();
  *         description: Success
  */
 router.route('/')
-  .post(validate(createCryptoSchema), controller.create)
-  .get(controller.getAll);
-
+    .post((0, validateMiddleware_1.validate)(cryptoSchema_1.createCryptoSchema), controller.create)
+    .get(controller.getAll);
 /**
  * @openapi
  * /api/cryptos/{id}:
@@ -90,8 +88,8 @@ router.route('/')
  *         description: No Content
  */
 router.route('/:id')
-  .get(validate(getCryptoParamsSchema), controller.getById)
-  .put(validate(updateCryptoSchema), controller.update)
-  .delete(validate(getCryptoParamsSchema), controller.delete);
-
-export default router;
+    .get((0, validateMiddleware_1.validate)(cryptoSchema_1.getCryptoParamsSchema), controller.getById)
+    .put((0, validateMiddleware_1.validate)(cryptoSchema_1.updateCryptoSchema), controller.update)
+    .delete((0, validateMiddleware_1.validate)(cryptoSchema_1.getCryptoParamsSchema), controller.delete);
+exports.default = router;
+//# sourceMappingURL=cryptoRoutes.js.map
