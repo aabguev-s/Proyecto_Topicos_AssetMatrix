@@ -4,10 +4,14 @@ const swaggerOptions: swaggerJsdoc.Options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'Documentación de la API',
+            title: 'AssetMatrix - Financial Intelligence API',
             version: '1.0.0',
-            description: 'API construida en ExpressJS con arquitectura separada por capas ejecutándose en Docker.',
+            description: 'API REST para monitoreo de activos bursátiles y criptográficos con arquitectura por capas.',
         },
+        tags: [
+            { name: 'Stocks', description: 'Mercados bursátiles (Alpha Vantage + MongoDB)' },
+            { name: 'Cryptos', description: 'Activos criptográficos' },
+        ],
         servers: [{ url: 'http://localhost:3000' }],
         paths: {
             '/api/cryptos': { //Ruta de prueba para la conexión con MongoDB y la gestión de criptomonedas
@@ -107,106 +111,7 @@ const swaggerOptions: swaggerJsdoc.Options = {
                 404: { description: 'Target does not exist' },
               },
             },
-        },
-            '/stocks': {
-                '/:symbol':{
-                    get: {
-                        summary: 'Consulta el Precio y Volumen real de un los Activos Bursátiles',
-                        responses: {
-                            200: { description: 'Arreglo de Activos Encontrado.' },
-                            500: { description: 'Error de Conexión con la API Externa.' }
-                        }
-                    }
-                },
-                '/watch':{
-                    post: {
-                        summary: 'Guarda un Activo Bursátil en la Lista de Seguimiento del Usuario',
-                        requestBody: {
-                            required: true,
-                            content: {
-                                'application/json': {
-                                    schema: {
-                                        type: 'object',
-                                        required: [],
-                                        properties: {
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        responses: {
-                            201: { description: 'Activo Bursátil Guardado en la Lista de Seguimiento.' },
-                            400: { description: 'Error de Validación del Activo.' }
-                        }
-                    }
-                },
-                '/history':{
-                    get: {
-                        summary: 'Análisis de las Tendencias Históricas de un Activo Bursátil',
-                        responses: {
-                            200: { description: 'Tendencias Históricas del Activo Bursátil Encontradas.' },
-                            500: { description: 'Error de Conexión con la API Externa.' }
-                        }
-                    }
-                },
-                '/:id':{
-                    delete: {
-                        summary: 'Elimina un Activo Bursátil de la Lista de Seguimiento del Usuario',
-                        responses: {
-                            200: { description: 'Activo Bursátil Eliminado de la Lista de Seguimiento.' },
-                            404: { description: 'Activo Bursátil no Encontrado en la Lista de Seguimiento.' }
-                        }
-                    }
-                }
             },
-            '/crypto':{
-                '/:coin':{
-                    get: {
-                        summary: 'Consulta el Market Cap y Fluctuación de las Últimas 24 Horas de una Criptomoneda',
-                        responses: {
-                            200: { description: 'Información de la Criptomoneda Encontrada.' },
-                            500: { description: 'Error de Conexión con la API Externa.' }
-                        }
-                    }
-                },
-                '/portfolio':{
-                    post: {
-                        summary: 'Registra una Transacción de Compra/Venta de Criptomonedas para el Usuario',
-                        requestBody: {
-                            required: true,
-                            content: {
-                                'application/json': {
-                                    schema: {
-                                        type: 'object',
-                                        required: [],
-                                        properties: {
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                '/analytics': {
-                    get: {
-                        summary: 'Balance Total de la Cartera Histórica de Criptomonedas del Usuario',
-                        responses: {
-                            200: { description: 'Balance Total de la Cartera Histórica Calculado.'},
-                            500: { description: 'Error al Calcular el Balance de la Cartera.'}
-                        }
-                    }
-                },
-                '/:tx_id': {
-                    delete: {
-                        summary: 'Revierte un Registro de Transacción de Criptomonedas en la Cartera del Usuario',
-                        responses: {
-                            200: { description: 'Transacción de Criptomonedas Revertida en la Cartera del Usuario.' },
-                            404: { description: 'Transacción de Criptomonedas no Encontrada en la Cartera del Usuario.' }
-                        }
-                    }
-                }
-            }
         }
     },
     apis: ['./src/routes/*.ts', './dist/src/routes/*.js'],

@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node server.js",
     "dev": "ts-node-dev --respawn --transpile-only server.ts",
-    "test": "ts-node server.ts"
+    "test": "jest",
+    "test:endpoints": "jest tests/endpoints",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +18,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.7.0",
+    "mongoose": "^9.7.2",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "zod": "^4.4.3"
@@ -24,9 +26,15 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.9.3",
+    "@types/supertest": "^6.0.3",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^10.4.0",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
