@@ -9,6 +9,8 @@ services:
       - PORT=3000
       - MONGO_URI=mongodb://db:27017/crypto_db
       - NODE_ENV=production
+    env_file:
+      - .env
     depends_on:
       - db
 

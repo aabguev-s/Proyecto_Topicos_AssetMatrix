@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { connectDB } from './src/config/db';
 import { specs } from './src/config/swagger';
 import cryptoRoutes from './src/routes/cryptoRoutes';
+import stockRoutes from './src/routes/stockRoutes';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Rutas de la API
 app.use('/api/cryptos', cryptoRoutes);
+app.use('/api/stock', stockRoutes);
 
 // Manejador de Errores Global
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

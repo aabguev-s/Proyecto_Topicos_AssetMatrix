@@ -7,7 +7,12 @@
     "build": "tsc",
     "start": "node server.js",
     "dev": "ts-node-dev --respawn --transpile-only server.ts",
-    "test": "ts-node server.ts"
+    "test": "ts-node server.ts",
+    "test:api": "ts-node --transpile-only src/testConnection.ts",
+    "test:repo": "ts-node --transpile-only src/testRepository.ts",
+    "test:service": "ts-node --transpile-only src/testService.ts",
+    "test:controller": "ts-node --transpile-only src/testController.ts"
+
   },
   "keywords": [],
   "author": "",
