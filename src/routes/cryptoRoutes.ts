@@ -42,6 +42,21 @@ router.route('/')
 
 /**
  * @openapi
+ * /api/cryptos/analytics:
+ * get:
+ * summary: Get balance total and analytics summary from transaction history
+ * tags: [Cryptos]
+ * responses:
+ * 200:
+ * description: Success
+ * 500:
+ * description: Internal Server Error
+ */
+router.route('/analytics')
+  .get(controller.getAnalytics);
+
+/**
+ * @openapi
  * /api/cryptos/{id}:
  * get:
  * summary: Get single asset metrics profile

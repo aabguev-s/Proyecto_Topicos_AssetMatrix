@@ -1,5 +1,5 @@
 import { CryptoRepository } from '../repositories/cryptoRepository';
-import { ICrypto } from '../models/Crypto';
+import { ICrypto, ICryptoTransaction } from '../models/Crypto';
 
 // Métodos no definitivos. Se ajustarán al integrar las API externas.
 
@@ -31,5 +31,39 @@ export class CryptoService {
   async deleteCrypto(id: string): Promise<void> {
     const deleted = await this.cryptoRepository.delete(id);
     if (!deleted) throw new Error('Cryptocurrency target does not exist');
+  }
+
+  async getPortfolioAnalytics() {
+    const cryptos = await this.cryptoRepository.findAll();
+    let estimatedNetInvestment = 0;
+    let totalPortfolioValue = 0;
+    let holdings: { [key: string]: number } = {};
+    let totalTransactionsProcessed = 0;
+    cryptos.forEach(crypto => {
+      const symbolUpper = crypto.symbol.toUpperCase();
+      if (crypto.transactions && crypto.transactions.length > 0) {
+        totalTransactionsProcessed += crypto.transactions.length;
+
+        crypto.transactions.forEach(tx => {
+          const value = tx.amount * tx.priceAtTx;
+          if (tx.type === 'buy') {
+            estimatedNetInvestment += value;
+            holdings[symbolUpper] = (holdings[symbolUpper] || 0) + tx.amount;
+          } else if (tx.type === 'sell') {
+            estimatedNetInvestment -= value;
+            holdings[symbolUpper] = (holdings[symbolUpper] || 0) - tx.amount;
+          }
+        });
+      }
+      const cryptoAmount = holdings[symbolUpper] || 0;
+      totalPortfolioValue += cryptoAmount * crypto.price;
+    });
+    return {
+      totalTransactionsProcessed,
+      estimatedNetInvestment,
+      totalPortfolioValue,
+      netProfitOrLoss: totalPortfolioValue - estimatedNetInvestment,
+      holdings
+    };
   }
 }
