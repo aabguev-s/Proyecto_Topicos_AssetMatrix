@@ -46,13 +46,17 @@ export class StockApiClient extends BaseApiClient {
         })
     }
 
+    private validateResponse(raw: any): void {
+        if (raw && (raw.Information || raw.Note || raw["Error Message"])) {
+            console.error("Alpha Vantage API Warning/Error Context:", raw);
+            throw new Error(`Alpha Vantage API ha fallado: ${raw.Information || raw.Note || raw["Error Message"]}`);
+        }
+    }
+
     // MÉTODOS PARA OBTENER SERIES DE TIEMPO DIARIAS, SEMANALES Y MENSUALES DE ACCIONES EN EL MERCADO GLOBAL
     async getGlobalEquityDaily(symbol: string): Promise<StockSeriesResponse> {
         const raw = await this.request<any>('?function=TIME_SERIES_DAILY&symbol=' + symbol + '&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = alphaVantageSeriesDSchema.parse(raw);
         const metadata = parsed["Meta Data"] || {};
         const stockSymbol = metadata["2. Symbol"] || symbol;
@@ -75,10 +79,7 @@ export class StockApiClient extends BaseApiClient {
 
     async getGlobalEquityWeekly(symbol: string): Promise<StockSeriesResponse> {
         const raw = await this.request<any>('?function=TIME_SERIES_WEEKLY&symbol=' + symbol + '&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = alphaVantageSeriesWSchema.parse(raw);
         const metadata = parsed["Meta Data"] || {};
         const stockSymbol = metadata["2. Symbol"] || symbol;
@@ -101,10 +102,7 @@ export class StockApiClient extends BaseApiClient {
 
     async getGlobalEquityMonthly(symbol: string): Promise<StockSeriesResponse> {
         const raw = await this.request<any>('?function=TIME_SERIES_MONTHLY&symbol=' + symbol + '&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = alphaVantageSeriesMSchema.parse(raw);
         const metadata = parsed["Meta Data"] || {};
         const stockSymbol = metadata["2. Symbol"] || symbol;
@@ -128,10 +126,7 @@ export class StockApiClient extends BaseApiClient {
     // MÉTODO PARA OBTENER EL PRECIO MÁS RECIENTE DE UNA ACCIÓN EN EL MERCADO GLOBAAL
     async getLatestPrice(symbol: string): Promise<LatestPriceResponse> {
         const raw = await this.request<any>('?function=GLOBAL_QUOTE&symbol=' + symbol + '&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = alphaVantageQuoteSchema.parse(raw);
         const quote = parsed['Global Quote'];
         return {
@@ -151,10 +146,7 @@ export class StockApiClient extends BaseApiClient {
     // MÉTODO PARA OBTENER EL ESTATUS DE LOS MERCADOS GLOBALES
     async getGlobalMarketStatus() : Promise<MarketStatusResponse[]> {
         const raw = await this.request<any>('?function=MARKET_STATUS&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = alphaVantageMarketStatusSchema.parse(raw);
         const markets = parsed['markets'] || [];
         return markets.map((market: any) => ({
@@ -169,10 +161,7 @@ export class StockApiClient extends BaseApiClient {
     // MÉRODO QUE BUSCA DENTRO DEL LISTADO DE ACCIONES AQEULLOS QUE HAGAN 'MATCH' CON LA KEYWORD PASADA 
     async getSymbolSearch(keyword: string): Promise<SymbolSearchResponse[]> {
         const raw = await this.request<any>('?function=SYMBOL_SEARCH&keywords='+ keyword + '&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = alphaVantageSymbolSearchSchema.parse(raw);
         const bestMatches = parsed.bestMatches || [];
         return bestMatches.map((match: any) => ({
@@ -187,10 +176,7 @@ export class StockApiClient extends BaseApiClient {
 
     async getTickerSMA(symbol: string): Promise<{symbol: string; data: { date: string; SMA: number }[]}> {
         const raw = await this.request<any>('?function=SMA&symbol='+ symbol +'&interval=weekly&time_period=10&series_type=open&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = technicalIndicatorsAlphaVantageSMA.parse(raw);
         const dataSMA = Object.entries(parsed["Technical Analysis: SMA"]).map(([date, values]) => {
           return {
@@ -206,10 +192,7 @@ export class StockApiClient extends BaseApiClient {
 
     async getTickerRSI(symbol: string): Promise<{symbol: string; data: { date: string; RSI: number }[]}> {
         const raw = await this.request<any>('?function=RSI&symbol='+ symbol +'&interval=weekly&time_period=10&series_type=open&apikey=' + this.apiKey);
-        if (raw && (raw.Information || raw["Note"] || raw["Error Message"])) {
-          console.error("Alpha Vantage API Warning/Error Context:", raw);
-          throw new Error(`Alpha Vantage API failed: ${raw.Information || raw["Note"] || raw["Error Message"]}`);
-        }
+        this.validateResponse(raw);
         const parsed = technicalIndicatorsAlphaVantageRSI.parse(raw);
         const dataSMA = Object.entries(parsed["Technical Analysis: RSI"]).map(([date, values]) => {
           return {
