@@ -7,6 +7,10 @@ const symbolOnlyParams = z.object({
     symbol: z.string().min(1, 'Se requiere de un simbolo').trim().toUpperCase(),
 });
 
+const keywordOnlyParams = z.object({
+    keyword: z.string().trim().toUpperCase(),
+})
+
 const symbolAndOptionalIdParams = z.object({
     symbol: z.string().min(1, 'Se requiere de un simbolo').trim().toUpperCase(),
     id: z.string().regex(objectIdRegex, 'Formato de id inválido').optional(),
@@ -19,6 +23,10 @@ const idOnlyParams = z.object({
 export const checkSymbolOnlySchema = z.object({
     body: symbolOnlyParams,
 });
+
+export const checkKeywordOnlySchema = z.object({
+    params: keywordOnlyParams,
+})
 
 export const checkSymbolOnlySchemaParams = z.object({
     params: symbolOnlyParams,

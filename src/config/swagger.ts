@@ -142,6 +142,19 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     }
                 }
             },
+            '/api/stock/search/{keyword}': {
+                get: {
+                    summary: 'Buscar Áctivos Bursátiles que Encajen con la Keyword Definida',
+                    tags: ['Stocks'],
+                    parameters: [
+                        { name: 'keyword', in: 'path', required: true, schema: { type: 'string' } }
+                    ],
+                    responses: {
+                        200: { description: 'Se encontraron los siguientes activos:' },
+                        500: { description: 'Error de Conexión con la API Externa.' }
+                    }
+                }
+            },
             '/api/stock/{id}': {
                 delete: {
                     summary: 'Elimina un Activo Bursátil de la Lista de Seguimiento del Usuario',

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { StockController } from '../controllers/stockController';
 import { validate } from '../middlewares/validateMiddleware';
-import { checkIdOnlySchema, checkSymbolOnlySchema, checkSymbolOnlySchemaParams } from '../schemas/stockParamsSchema';
+import { checkIdOnlySchema, checkSymbolOnlySchema, checkSymbolOnlySchemaParams, checkKeywordOnlySchema } from '../schemas/stockParamsSchema';
 
 const router = Router();
 const controller = new StockController();
@@ -15,6 +15,9 @@ router.route('/history')
 
 router.route('/watch')
     .post(validate(checkSymbolOnlySchema), controller.startTrackingTicker);
+
+router.route('/search/:keyword')
+    .get(validate(checkKeywordOnlySchema), controller.searchByKeyword);
 
 router.route('/:id')
     .delete(validate(checkIdOnlySchema), controller.removeTickerFromTracking);

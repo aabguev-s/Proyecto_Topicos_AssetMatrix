@@ -33,16 +33,23 @@ export class StockController {
         }
     };
 
-    getDataFromCurrentTracked = async (req: Request, res: Response): Promise<void> => {
+    getDataFromCurrentTracked = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const result = await this.stockService.getDataFromCurrentTracked();
+            if (!result || result.length == 0) {
+                res.status(404).json({
+                    success: true,
+                    message: `No se han encontrado tickers en seguimiento.`
+                });
+                return;
+            }
             res.status(200).json(result);
         } catch (error : any) {
-            res.status(404).json({error: error.message});
+            next(error);
         }
     };
 
-    getCurrentTickerData = async (req: Request, res: Response): Promise<void> => {
+    getCurrentTickerData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const symbol = req.params.symbol as string;
             if (!symbol) {
@@ -50,22 +57,36 @@ export class StockController {
                 return;
             }
             const result = await this.stockService.getCurrentTickerData(symbol);
+            if (!result) {
+                res.status(404).json({
+                    success: true,
+                    message: `No se han encontrado tickers con el simbolo ${symbol}.`
+                });
+                return;
+            }
             res.status(200).json(result);
         } catch(error : any){
-            res.status(404).json({error: error.message});
+            next(error);
         }
     }
 
-    getCurrentTrackedTickerData = async (req: Request, res: Response): Promise<void> => {
+    getCurrentTrackedTickerData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const result = await this.stockService.getCurrentTrackedTickerData();
+            if (!result || result.length == 0) {
+                res.status(404).json({
+                    success: true,
+                    message: `No se han encontrado tickers en seguimiento.`
+                });
+                return;
+            }
             res.status(200).json(result);
         } catch(error : any){
-            res.status(404).json({error: error.message});
+            next(error);
         }
     }
 
-    getAllCurrentTickerData =async (req: Request, res: Response): Promise<void> => {
+    getAllCurrentTickerData =async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const symbol = req.params.symbol as string;
             if (!symbol) {
@@ -73,31 +94,52 @@ export class StockController {
                 return;
             }
             const result = await this.stockService.getAllCurrentTickerData(symbol);
+            if (!result) {
+                res.status(404).json({
+                    success: true,
+                    message: `No se han encontrado tickers con el simbolo ${symbol}.`
+                });
+                return;
+            }
             res.status(200).json(result);
         } catch(error : any){
-            res.status(404).json({error: error.message});
+            next(error);
         }
     }
 
-    getHistoricTrendsTracked = async (req: Request, res: Response): Promise<void> => {
+    getHistoricTrendsTracked = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const result = await this.stockService.getHistoricTrendsTracked();
+            if (!result || result.length == 0) {
+                res.status(404).json({
+                    success: true,
+                    message: `No se han encontrado tickers en seguimiento.`
+                });
+                return;
+            }
             res.status(200).json(result);
         } catch (error : any) {
-            res.status(404).json({error: error.message});
+            next(error);
         }
     }
 
-    getAllCurrentTrackedTickerData = async (req: Request, res: Response): Promise<void> => {
+    getAllCurrentTrackedTickerData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const result = await this.stockService.getAllCurrentTrackedTickerData();
+            if (!result || result.length == 0) {
+                res.status(404).json({
+                    success: true,
+                    message: `No se han encontrado tickers en seguimiento.`
+                });
+                return;
+            }
             res.status(200).json(result);
         } catch(error : any){
-            res.status(404).json({error: error.message});
+            next(error);
         }
     }
 
-    startTrackingTicker = async (req: Request, res: Response): Promise<void> => {
+    startTrackingTicker = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const symbol = req.body.symbol as string; 
             if (!symbol) {
@@ -105,6 +147,13 @@ export class StockController {
                 return;
             }
             const raw = await this.stockService.startTrackingTicker(symbol);
+            if (!raw) {
+                res.status(406).json({
+                    status: 'fail',
+                    message: `No se han encontrado activos bursátiles con el simbolo ${symbol}.`
+                });
+                return
+            };
             const processed = trackingSummaryResponseSchema.parse(raw);
             res.status(201).json({ 
                 success: true, 
@@ -112,15 +161,39 @@ export class StockController {
                 data: processed,
             });
         } catch (error: any) {
-            res.status(406).json({ error: error.message });
+            next(error);
         }
     };
+
+    searchByKeyword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const keyword = req.params.keyword as string;
+            if (!keyword) {
+                res.status(400).json({ status: "fail", message: "Se requiere de una palabra clave válida para la búsqueda." });
+                return;
+            }
+            const data = await this.stockService.searchByKeyword(keyword);
+            if (!data || data.length == 0) {
+                res.status(404).json({
+                status: 'fail',
+                message: `No se han encontrado activos bursátiles a partir de la palabra clave ${keyword}.`
+            });
+            return
+            };
+            res.status(200).json({
+                status: 'success',
+                data: data
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 
     getAllDBTrackedTickers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const data = await this.stockService.getAllDBTrackedTickers();
 
-            if (!data) {
+            if (!data || data.length == 0) {
                 res.status(404).json({
                 status: 'fail',
                 message: `No hay tickers en seguimiento`
