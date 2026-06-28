@@ -99,6 +99,16 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     },
                 },
             },
+            '/api/stock': {
+                get: {
+                    summary: 'Tickers Actualmente en Seguimiento',
+                    tags: ['Stocks'],
+                    responses: {
+                        200: { description: 'Se tienen los siguientes tickers de activos bursatiles en seguimiento.' },
+                        500: { description: 'No hay tickers en seguimiento.' }
+                    }
+                }
+            },
             '/api/stock/history': {
                 get: {
                     summary: 'Análisis de las Tendencias Históricas de un Activo Bursátil',

@@ -116,14 +116,46 @@ export class StockController {
         }
     };
 
-    removeTickerFromTracking = async (req: Request, res: Response): Promise<void> => {
+    getAllDBTrackedTickers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const data = await this.stockService.getAllDBTrackedTickers();
+
+            if (!data) {
+                res.status(404).json({
+                status: 'fail',
+                message: `No hay tickers en seguimiento`
+            });
+            return
+            };
+            res.status(200).json({
+                status: 'success',
+                data: data
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    removeTickerFromTracking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id as string;
-            const symbol = (req.body?.symbol || undefined) as string | undefined;
-            await this.stockService.removeTickerFromTracking(id, symbol);
-            res.status(204).send(); 
-        } catch (error: any) {
-            res.status(404).json({ error: error.message });
+            const deletedTicker = await this.stockService.removeTickerFromTracking(id);
+
+            if (!deletedTicker) {
+                res.status(404).json({
+                status: 'fail',
+                message: `No hay ticker con id: : ${id}`
+            });
+            return;
+          }
+      
+        res.status(200).json({
+            status: 'success',
+            message: `Se ha removido del segumiento el ticker de id: ${id}.`,
+            data: deletedTicker
+          });
+        } catch (error) {
+            next(error);
         }
-}   ;
+    };
 }

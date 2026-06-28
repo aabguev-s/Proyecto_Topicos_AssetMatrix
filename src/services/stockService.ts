@@ -223,6 +223,10 @@ export class StockService {
         return response;
     };
 
+    async getAllDBTrackedTickers(): Promise<IStockTicker[]> {
+        return await this.stockRepository.getAllCurrentTickers();
+    }
+
     async startTrackingTicker(symbol: string): Promise<TrackingSummaryResponse> {
         const matches = await this.stockApiClient.getSymbolSearch(symbol);
         const trackedTickers: Array<{ symbol: string; name: string }> = [];

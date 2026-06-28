@@ -7,7 +7,8 @@ const router = Router();
 const controller = new StockController();
 
 // Ruta base /stocks, declarado en server.ts
-//router.route('/');
+router.route('/')
+    .get(controller.getAllDBTrackedTickers.bind(controller));
 
 router.route('/history')
     .get(controller.getHistoricTrendsTracked.bind(controller));
