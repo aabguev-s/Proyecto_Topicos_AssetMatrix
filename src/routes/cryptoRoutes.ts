@@ -39,6 +39,34 @@ const controller = new CryptoController();
  *     responses:
  *       200:
  *         description: Success
+ *   post:
+ *     summary: Create a new cryptocurrency token entry
+ *     tags: [Cryptos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, symbol, price]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               symbol:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               marketCap:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Created
+ *   get:
+ *     summary: Retrieve complete index list of tracking crypto metrics
+ *     tags: [Cryptos]
+ *     responses:
+ *       200:
+ *         description: Success
  */
 router.route('/')
   .post(validate(createCryptoSchema), controller.create)
