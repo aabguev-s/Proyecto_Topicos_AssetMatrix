@@ -1,46 +1,28 @@
 "use strict";
+//clients/baseAPIClient.ts
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseAPIClient = void 0;
-class BaseAPIClient {
+exports.BaseApiClient = void 0;
+class BaseApiClient {
     baseUrl;
-    defaultParams;
-    constructor(baseUrl, defaultParams = {}) {
-        this.baseUrl = baseUrl;
-        this.defaultParams = defaultParams;
+    apiKey;
+    constructor(config) {
+        this.baseUrl = config.baseUrl;
+        this.apiKey = config.apiKey || '';
     }
-    buildUrl(path, params = {}) {
-        const url = new URL(path, this.baseUrl);
-        const mergedParams = { ...this.defaultParams, ...params };
-        for (const [key, value] of Object.entries(mergedParams)) {
-            if (value !== undefined && value !== '') {
-                url.searchParams.set(key, value);
+    async request(endpoint, options = {}) {
+        const url = `${this.baseUrl}${endpoint}`;
+        try {
+            const response = await fetch(url, { ...options });
+            if (!response.ok) {
+                throw new Error(`Error de la API externa [${response.status}]: ${response.statusText}`);
             }
+            return await response.json();
         }
-        return url.toString();
-    }
-    async request(path, options = {}) {
-        const url = this.buildUrl(path, options.params);
-        const headers = { ...options.headers };
-        const init = {
-            method: options.method ?? 'GET',
-            headers,
-        };
-        if (options.body !== undefined) {
-            headers['Content-Type'] = 'application/json';
-            init.body = JSON.stringify(options.body);
+        catch (error) {
+            console.error(`Fallo en la conexión con el endpoint ${endpoint}:`, error);
+            throw error;
         }
-        const response = await fetch(url, init);
-        if (!response.ok) {
-            throw new Error(`External API error: ${response.status} ${response.statusText}`);
-        }
-        return response.json();
-    }
-    async get(path, params = {}) {
-        return this.request(path, { method: 'GET', params });
-    }
-    async post(path, body, params = {}) {
-        return this.request(path, { method: 'POST', body, params });
     }
 }
-exports.BaseAPIClient = BaseAPIClient;
+exports.BaseApiClient = BaseApiClient;
 //# sourceMappingURL=baseAPIClient.js.map

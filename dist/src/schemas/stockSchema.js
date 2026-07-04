@@ -6,9 +6,12 @@ const stockSymbolSchema = zod_1.z
     .string({ error: 'Symbol is required' })
     .min(1, 'Symbol cannot be empty')
     .transform((val) => val.toUpperCase());
-const watchStockSymbolSchema = stockSymbolSchema.refine((value) => !/^[0-9]+$/.test(value), {
-    message: 'Symbol cannot be only numbers',
-});
+// Define watch POST symbol schema directly so we can apply regex and transform
+const watchStockSymbolSchema = zod_1.z
+    .string({ error: 'Symbol is required' })
+    .min(1, 'Symbol cannot be empty')
+    .regex(/^.+$/, { message: 'Symbol must be a non-empty string' })
+    .transform((val) => val.toUpperCase());
 exports.stockSymbolParamsSchema = zod_1.z.object({
     params: zod_1.z.object({
         symbol: stockSymbolSchema,

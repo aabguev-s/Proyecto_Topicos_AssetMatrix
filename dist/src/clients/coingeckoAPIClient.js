@@ -1,54 +1,31 @@
+"use strict";
 //clients/coingeckoAPIClient.ts
-
-import { BaseApiClient, ApiClientConfig } from './baseAPIClient';
-
-export interface CoinMarketsResponse {
-    id: string;
-    name: string;
-    symbol: string;
-    current_price: number;
-    market_cap: number;
-    total_volume: number;
-    price_change_percentage_24h?: number;
-    circulating_supply?: number;
-    total_supply?: number;
-}
-
-export class CryptoApiClient extends BaseApiClient {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CryptoApiClient = void 0;
+const baseAPIClient_1 = require("./baseAPIClient");
+class CryptoApiClient extends baseAPIClient_1.BaseApiClient {
     constructor() {
         super({
             baseUrl: 'https://api.coingecko.com/api/v3/',
             apiKey: process.env.COINGECKO_API_KEY || ''
         });
     }
-
-    async getCoinMarkets(
-        vsCurrency: string = 'usd', 
-        ids?: string,
-        perPage: number = 100,
-        page: number = 1
-    ): Promise<CoinMarketsResponse[]> {
+    async getCoinMarkets(vsCurrency = 'usd', ids, perPage = 100, page = 1) {
         let endpoint = `/coins/markets?vs_currency=${vsCurrency}`;
         endpoint += `&order=market_cap_desc`;
         endpoint += `&per_page=${Math.min(perPage, 250)}`;
         endpoint += `&page=${page}`;
         endpoint += `&sparkline=false`;
         endpoint += `&price_change_percentage=24h`;
-        
         if (ids && ids.trim() !== '') {
             endpoint += `&ids=${ids}`;
         }
-
-        const options: RequestInit = {};
-        
-
-        const raw = await this.request<any[]>(endpoint, options);
-
+        const options = {};
+        const raw = await this.request(endpoint, options);
         if (!raw || !Array.isArray(raw)) {
             throw new Error('Respuesta inválida de CoinGecko API');
         }
-
-        return raw.map((coin): CoinMarketsResponse => ({
+        return raw.map((coin) => ({
             id: coin.id || '',
             name: coin.name || '',
             symbol: (coin.symbol || '').toUpperCase(),
@@ -61,3 +38,5 @@ export class CryptoApiClient extends BaseApiClient {
         }));
     }
 }
+exports.CryptoApiClient = CryptoApiClient;
+//# sourceMappingURL=coingeckoAPIClient.js.map

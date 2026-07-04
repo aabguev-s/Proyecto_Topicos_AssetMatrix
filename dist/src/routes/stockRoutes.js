@@ -51,6 +51,7 @@ const controller = new stockController_1.StockController();
  *                 type: string
  *                 description: 'Stock symbol must be a non-empty string and cannot be only numbers'
  *                 example: MSFT
+ *                 pattern: '^.+$'
  *               companyName:
  *                 type: string
  *                 example: Microsoft Corporation
@@ -71,6 +72,7 @@ const controller = new stockController_1.StockController();
  *                 error:
  *                   type: string
  */
+// Las rutas del router siguen igual
 router.get('/watch', controller.getWatchlist);
 router.post('/watch', (0, validateMiddleware_1.validate)(stockSchema_1.watchStockSchema), controller.addToWatchlist);
 /**
@@ -107,27 +109,6 @@ router.post('/watch', (0, validateMiddleware_1.validate)(stockSchema_1.watchStoc
  *                   type: string
  *                 latestTradingDay:
  *                   type: string
- *       400:
- *         description: Símbolo inválido - debe ser un string no vacío
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: fail
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       field:
- *                         type: string
- *                         example: params.symbol
- *                       message:
- *                         type: string
- *                         example: Symbol cannot be empty
  *       404:
  *         description: Símbolo no encontrado
  *       500:

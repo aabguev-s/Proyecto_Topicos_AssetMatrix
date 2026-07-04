@@ -1,36 +1,21 @@
 "use strict";
+//services/cryptoService.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CryptoService = void 0;
 const cryptoRepository_1 = require("../repositories/cryptoRepository");
+const coingeckoAPIClient_1 = require("../clients/coingeckoAPIClient");
 // Métodos no definitivos. Se ajustarán al integrar las API externas.
 class CryptoService {
     cryptoRepository = new cryptoRepository_1.CryptoRepository();
-    async createCrypto(data) {
-        if (data.symbol)
-            data.symbol = data.symbol.toUpperCase();
-        return await this.cryptoRepository.create(data);
-    }
-    async getAllCryptos() {
-        return await this.cryptoRepository.findAll();
-    }
-    async getCryptoById(id) {
-        const crypto = await this.cryptoRepository.findById(id);
-        if (!crypto)
-            throw new Error('Cryptocurrency asset not found');
-        return crypto;
-    }
-    async updateCrypto(id, data) {
-        if (data.symbol)
-            data.symbol = data.symbol.toUpperCase();
-        const updatedCrypto = await this.cryptoRepository.update(id, data);
-        if (!updatedCrypto)
-            throw new Error('Cryptocurrency target does not exist');
-        return updatedCrypto;
-    }
-    async deleteCrypto(id) {
-        const deleted = await this.cryptoRepository.delete(id);
-        if (!deleted)
-            throw new Error('Cryptocurrency target does not exist');
+    CryptoApiClient = new coingeckoAPIClient_1.CryptoApiClient();
+    // services/cryptoService.ts
+    async getCoinQuote(coinId) {
+        // getCoinMarkets espera el "id" de CoinGecko (ej: 'bitcoin'), no el ticker ('BTC')
+        const results = await this.CryptoApiClient.getCoinMarkets('usd', coinId.toLowerCase());
+        if (!results || results.length === 0) {
+            throw new Error(`No se encontraron datos para el activo '${coinId}' en CoinGecko.`);
+        }
+        return results[0];
     }
 }
 exports.CryptoService = CryptoService;

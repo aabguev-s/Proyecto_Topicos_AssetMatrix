@@ -1,9 +1,18 @@
 import { Document } from 'mongoose';
+export interface ICryptoTransaction {
+    _id?: any;
+    type: 'buy' | 'sell';
+    amount: number;
+    priceAtTx: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
 export interface ICrypto extends Document {
     name: string;
     symbol: string;
     price: number;
     marketCap?: number;
+    transactions: ICryptoTransaction[];
     createdAt: Date;
     updatedAt: Date;
 }

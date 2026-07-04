@@ -8,6 +8,7 @@ export interface StockQuote {
 }
 export declare class AlphaVantageClient {
     private readonly client;
+    private readonly apiKey;
     constructor(apiKey?: string);
     getGlobalQuote(symbol: string): Promise<StockQuote>;
 }

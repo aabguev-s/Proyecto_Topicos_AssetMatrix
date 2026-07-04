@@ -1,17 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AlphaVantageClient = void 0;
+// alphaVantageClient.ts
 const baseAPIClient_1 = require("./baseAPIClient");
+// 1. Crear una clase concreta que extienda BaseApiClient
+class AlphaVantageApiClient extends baseAPIClient_1.BaseApiClient {
+    constructor(config) {
+        super(config);
+    }
+    // Exponer el método request como público si es necesario
+    async requestPublic(endpoint, options = {}) {
+        return this.request(endpoint, options);
+    }
+}
 class AlphaVantageClient {
     client;
+    apiKey;
     constructor(apiKey = process.env.ALPHA_VANTAGE_API_KEY || 'demo') {
-        this.client = new baseAPIClient_1.BaseAPIClient('https://www.alphavantage.co', { apikey: apiKey });
+        this.apiKey = apiKey;
+        this.client = new AlphaVantageApiClient({
+            baseUrl: 'https://www.alphavantage.co',
+            apiKey: apiKey
+        });
     }
     async getGlobalQuote(symbol) {
-        const data = await this.client.get('/query', {
-            function: 'GLOBAL_QUOTE',
-            symbol: symbol.toUpperCase(),
-        });
+        // Construir URL con parámetros
+        const endpoint = `/query?function=GLOBAL_QUOTE&symbol=${symbol.toUpperCase()}&apikey=${this.apiKey}`;
+        // Usar el método público
+        const data = await this.client.requestPublic(endpoint);
         if (data.Note || data.Information) {
             throw new Error(data.Note || data.Information || 'Alpha Vantage API limit reached');
         }

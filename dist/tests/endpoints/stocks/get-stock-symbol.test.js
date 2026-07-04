@@ -55,48 +55,5 @@ describe('GET /api/stocks/:symbol', () => {
         expect(response.status).toBe(500);
         expect(response.body).toEqual(expect.objectContaining({ error: expect.any(String) }));
     });
-    it('éxito: responde 200 cuando el símbolo es válido con números (ej. BRK1)', async () => {
-        global.fetch = jest.fn().mockResolvedValue({
-            ok: true,
-            status: 200,
-            statusText: 'OK',
-            json: async () => ({
-                'Global Quote': {
-                    '01. symbol': 'BRK1',
-                    '05. price': '500.00',
-                    '06. volume': '1000000',
-                    '07. latest trading day': '2024-06-20',
-                    '09. change': '5.00',
-                    '10. change percent': '1.00%',
-                },
-            }),
-        });
-        const response = await (0, supertest_1.default)(app_1.testApp).get('/api/stocks/BRK1');
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual(expect.objectContaining({
-            symbol: 'BRK1',
-            price: 500.0,
-        }));
-    });
-    it('éxito: responde 200 cuando el símbolo es válido en minúsculas (ej. msft)', async () => {
-        global.fetch = jest.fn().mockResolvedValue({
-            ok: true,
-            status: 200,
-            statusText: 'OK',
-            json: async () => ({
-                'Global Quote': {
-                    '01. symbol': 'MSFT',
-                    '05. price': '420.50',
-                    '06. volume': '12345678',
-                    '07. latest trading day': '2024-06-20',
-                    '09. change': '2.35',
-                    '10. change percent': '0.56%',
-                },
-            }),
-        });
-        const response = await (0, supertest_1.default)(app_1.testApp).get('/api/stocks/msft');
-        expect(response.status).toBe(200);
-        expect(response.body.symbol).toBe('MSFT');
-    });
 });
 //# sourceMappingURL=get-stock-symbol.test.js.map

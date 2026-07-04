@@ -36,40 +36,6 @@ describe('POST /api/stocks/watch', () => {
         expect(response.status).toBe(400);
         expect(response.body.status).toBe('fail');
     });
-    it('éxito: crea un ticker con caracteres especiales si no es solo numérico', async () => {
-        const response = await (0, supertest_1.default)(app_1.testApp)
-            .post('/api/stocks/watch')
-            .send({ symbol: 'MSFT-B', companyName: 'Microsoft' });
-        expect(response.status).toBe(201);
-        expect(response.body.symbol).toBe('MSFT-B');
-    });
-    it('error: responde 400 cuando el símbolo es completamente numérico', async () => {
-        const response = await (0, supertest_1.default)(app_1.testApp)
-            .post('/api/stocks/watch')
-            .send({ symbol: '12345', companyName: 'Invalid' });
-        expect(response.status).toBe(400);
-        expect(response.body.status).toBe('fail');
-    });
-    it('éxito: crea un ticker con más de 5 caracteres si no es solo numérico', async () => {
-        const response = await (0, supertest_1.default)(app_1.testApp)
-            .post('/api/stocks/watch')
-            .send({ symbol: 'MICROSOFT123', companyName: 'Microsoft' });
-        expect(response.status).toBe(201);
-        expect(response.body.symbol).toBe('MICROSOFT123');
-    });
-    it('éxito: crea un ticker con números válido (ej. BRK1)', async () => {
-        const response = await (0, supertest_1.default)(app_1.testApp)
-            .post('/api/stocks/watch')
-            .send({
-            symbol: 'BRK1',
-            companyName: 'Berkshire Hathaway',
-        });
-        expect(response.status).toBe(201);
-        expect(response.body).toEqual(expect.objectContaining({
-            symbol: 'BRK1',
-            companyName: 'Berkshire Hathaway',
-        }));
-    });
     it('error: símbolo duplicado (409)', async () => {
         await (0, supertest_1.default)(app_1.testApp)
             .post('/api/stocks/watch')
