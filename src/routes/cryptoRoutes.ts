@@ -12,7 +12,7 @@ const controller = new CryptoController();
  * @openapi
  * /api/cryptos/market/{coin}:
  *   get:
- *     summary: Get market cap and 24h fluctuation for a crypto asset
+ *     summary: Obtener capitalización de mercado y fluctuación 24h para una criptomoneda
  *     tags: [Cryptos]
  *     parameters:
  *       - in: path
