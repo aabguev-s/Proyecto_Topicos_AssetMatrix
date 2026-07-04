@@ -33,22 +33,35 @@ const swaggerOptions: swaggerJsdoc.Options = {
                       'application/json': {
                         schema: {
                           type: 'object',
-                          required: ['name', 'symbol', 'price'],
+                          required: ['id', 'name', 'symbol', 'transactions'],
                           properties: {
-                            name: { type: 'string' },
-                            symbol: { type: 'string' },
-                            price: { type: 'number' },
-                            marketCap: { type: 'number' },
-                            createdAt: { type: 'string', format: 'date-time', readOnly: true },
-                            updatedAt: { type: 'string', format: 'date-time', readOnly: true }
+                            id: { type: 'string', example: 'bitcoin' },
+                            name: { type: 'string', example: 'Bitcoin' },
+                            symbol: { type: 'string', example: 'BTC' },
+                            transactions: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                required: ['current_price', 'total_volume', 'createdAt'],
+                                properties: {
+                                  current_price: { type: 'number', example: 62599 },
+                                  total_volume: { type: 'number', example: 25762387797 },
+                                  createdAt: { type: 'string', example: '2024-01-01T00:00:00Z' }
+                                }
+                              }
+                            }
                           },
                           example: {
+                            id: 'bitcoin',
                             name: 'Bitcoin',
                             symbol: 'BTC',
-                            price: 65000,
-                            marketCap: 1280000000000,
-                            createdAt: '2024-01-01T00:00:00Z',
-                            updatedAt: '2024-01-01T00:00:00Z'
+                            transactions: [
+                              {
+                                current_price: 62599,
+                                total_volume: 25762387797,
+                                createdAt: '2024-01-01T00:00:00Z'
+                              }
+                            ]
                           },
                         },
                       },

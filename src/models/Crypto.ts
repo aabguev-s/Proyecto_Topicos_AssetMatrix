@@ -6,41 +6,34 @@ import { Schema, model, Document } from 'mongoose';
 
 export interface ICryptoTransaction {
   _id?: any;
-  type: 'buy' | 'sell';
-  amount: number;
-  priceAtTx: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  current_price: number;
+  total_volume: number;
+  createdAt: string | Date;
 }
 
 export interface ICrypto extends Document {
+  id: string; // Tu ID manual (ej: "bitcoin")
   name: string;
   symbol: string;
-  price: number;
-  marketCap?: number;
   transactions: ICryptoTransaction[];
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const CryptoTransactionSchema = new Schema<ICryptoTransaction>(
   {
-    type: { type: String, enum: ['buy', 'sell'], required: true },
-    amount: { type: Number, required: true },
-    priceAtTx: { type: Number, required: true },
+    current_price: { type: Number, required: true },
+    total_volume: { type: Number, required: true },
+    createdAt: { type: String, required: true } // Almacena la fecha como string ISO
   },
-  { timestamps: true }
+  { _id: true } // Nos aseguramos de que la BD le cree su ID automático a cada transacción
 );
 
 const CryptoSchema = new Schema<ICrypto>(
-  {
+ {
+    id: { type: String, required: true, unique: true }, // Campo para tu ID manual
     name: { type: String, required: true, unique: true },
     symbol: { type: String, required: true, uppercase: true },
-    price: { type: Number, required: true },
-    marketCap: { type: Number },
     transactions: [CryptoTransactionSchema],
   },
-  { timestamps: true }
 );
 
 export const Crypto = model<ICrypto>('Crypto', CryptoSchema);
