@@ -2,47 +2,59 @@
 
 import { CryptoRepository } from '../repositories/cryptoRepository';
 import { ICrypto, ICryptoTransaction } from '../models/Crypto';
-import {CryptoApiClient} from '../clients/coingeckoAPIClient';
-
-
-// Métodos no definitivos. Se ajustarán al integrar las API externas.
+import {CryptoApiClient, CoinMarketsResponse} from '../clients/coingeckoAPIClient';
 
 export class CryptoService {
   private cryptoRepository = new CryptoRepository();
   private CryptoApiClient = new CryptoApiClient();
 
-  async createCrypto(data: Partial<ICrypto>): Promise<ICrypto> {
-    if (!data.id || !data.name || !data.symbol) {
-      throw new Error('id, name, and symbol are required to process this operation');
+  async createCrypto(cryptoId: string, transaction?: Partial<ICryptoTransaction>): Promise<ICrypto> {
+    if(!cryptoId || cryptoId.trim() === '') {
+      throw new Error('Se requiere un ID de criptomoneda válido para procesar la transacción');
     }
-
-    // Normalizamos el símbolo a mayúsculas
-    data.symbol = data.symbol.toUpperCase();
-
-    // 1. Extraer la nueva transacción del payload
-    const newTransaction = data.transactions && data.transactions.length > 0 
-      ? data.transactions[0] 
-      : null;
-
-    if (!newTransaction) {
-      throw new Error('Al menos una transacción es requerida para procesar la operación');
+    let data : Partial<ICrypto> | null = await this.cryptoRepository.findById(cryptoId.toLowerCase());
+    let fetched : CoinMarketsResponse[] | null = null;
+    if (!data) {
+      // Si no existe, creamos un nuevo registro
+      fetched = await this.CryptoApiClient.getCoinMarkets('usd', cryptoId.toLowerCase());
+      if (!fetched || !fetched[0] || fetched.length === 0) {
+        throw new Error(`No se pudo obtener información de la criptomoneda con ID: ${cryptoId}`);
+      }
+      data = {
+        id: fetched[0].id,
+        name: fetched[0].name,
+        symbol: fetched[0].symbol.toUpperCase(),
+        transactions: []
+      }
+      data = await this.cryptoRepository.create(data);
     }
+    let response: Partial<ICrypto> | null;
 
-    // 2. Intentar buscar si la moneda ya existe usando tu repositorio por ID, Nombre o Símbolo
-    let crypto = await this.cryptoRepository.findByIdNameOrSymbol(data.id) ||
-                 await this.cryptoRepository.findByIdNameOrSymbol(data.name) ||
-                 await this.cryptoRepository.findByIdNameOrSymbol(data.symbol);
-
-    if (crypto) {
-      // CASO A: Ya existe. Llamamos al método del repositorio para hacer el $push seguro
-      const updated = await this.cryptoRepository.pushTransaction(crypto.id, newTransaction as ICryptoTransaction);
-      
-      if (!updated) throw new Error('Error al anexar la transacción');
-      return updated;
+    if (!transaction || !transaction.current_price || !transaction.total_volume || !transaction.data_from) {
+      if (!fetched) {
+        fetched = await this.CryptoApiClient.getCoinMarkets('usd', cryptoId.toLowerCase());
+      }
+      if (!fetched || !fetched[0] || fetched.length === 0) {
+        throw new Error(`No se pudo obtener información de la criptomoneda con ID: ${cryptoId}`);
+      }
+      const newTransaction: ICryptoTransaction = {
+        current_price: fetched[0].current_price,
+        total_volume: fetched[0].total_volume,
+        data_from: fetched[0].last_updated || new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      };
+      response = await this.cryptoRepository.pushTransaction(data.id as string, newTransaction);
     } else {
-      // CASO B: No existe, creamos el documento desde cero con su primera transacción
-      return await this.cryptoRepository.create(data);
+      let newTransaction: ICryptoTransaction = {
+        current_price: transaction.current_price,
+        total_volume: transaction.total_volume,
+        data_from: transaction.data_from,
+        createdAt: new Date().toISOString()
+      }
+      response =  await this.cryptoRepository.pushTransaction(data.id as string, newTransaction);
     }
+    if (!response) throw new Error('Error al anexar la transacción');
+    return response as ICrypto;
   }
 
   async getAllCryptos(): Promise<ICrypto[]> {

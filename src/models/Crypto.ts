@@ -8,6 +8,7 @@ export interface ICryptoTransaction {
   _id?: any;
   current_price: number;
   total_volume: number;
+  data_from: string | Date;
   createdAt: string | Date;
 }
 
@@ -22,6 +23,7 @@ const CryptoTransactionSchema = new Schema<ICryptoTransaction>(
   {
     current_price: { type: Number, required: true },
     total_volume: { type: Number, required: true },
+    data_from: { type: String, required: false }, // Almacena la fecha como string ISO
     createdAt: { type: String, required: true } // Almacena la fecha como string ISO
   },
   { _id: true } // Nos aseguramos de que la BD le cree su ID automático a cada transacción

@@ -5,11 +5,33 @@ import { z } from 'zod';
 
 // schemas/cryptoSchema.ts
 
+
 export const getCoinParamsSchema = z.object({
   params: z.object({
     coin: z.string({ error: 'El id de la moneda es requerido' }).min(2).toLowerCase(),
   }),
 });
+
+export const gettx_idParamsSchema = z.object({
+  params: z.object({
+    tx_id: z.string({error: 'El id de la transacción en la base de datos es requerido'}),
+  }),
+})
+
+export const createTransactionSchema = z.object({
+  id: z.string({ error: 'Se requiere un ID válido' }).trim().toLowerCase(),
+  transaction: z.object({
+    current_price: z.number({ error: 'Precio actual debe ser un número' }),
+    total_volume: z.number({ error: 'Volumen total debe ser un número' }),
+    data_from: z.string({ error: 'La fecha de creación debe ser un string del formato yyyy-MM-dd' })
+      .regex(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/, 'La fecha debe tener formato yyyy-MM-dd')
+      .transform((s) => {
+        const d = new Date(s);
+        if (Number.isNaN(d.getTime())) throw new Error('Fecha inválida');
+        return d;
+      })
+  }).optional()
+})
 
 const transactionBodySchema = z.object({
   _id: z.string().optional(),

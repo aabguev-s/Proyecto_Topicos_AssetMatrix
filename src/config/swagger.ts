@@ -16,16 +16,18 @@ const swaggerOptions: swaggerJsdoc.Options = {
         ],
         servers: [{ url: 'http://localhost:3000' }],
         paths: {
-            '/api/cryptos': { //Ruta de prueba para la conexión con MongoDB y la gestión de criptomonedas
+            '/api/crypto': {
                 get: {
-                  summary: 'Retrieve complete list of tracked cryptos',
+                  summary: 'Retorna la lista completa de cryptomonedas registradas en la cartera',
                   tags: ['Cryptos'],
                   responses: {
                     200: { description: 'Success' },
                   },
                 },
+              },
+              '/api/crypto/portfolio': {
                 post: {
-                  summary: 'Create a new cryptocurrency token entry',
+                  summary: 'Crea un nuevo registro de transacción para una criptomoneda específica. Agrega la criptomoneda a la cartera si no existe previamente.',
                   tags: ['Cryptos'],
                   requestBody: {
                     required: true,
@@ -33,35 +35,29 @@ const swaggerOptions: swaggerJsdoc.Options = {
                       'application/json': {
                         schema: {
                           type: 'object',
-                          required: ['id', 'name', 'symbol', 'transactions'],
+                          required: ['id', 'transaction'],
                           properties: {
                             id: { type: 'string', example: 'bitcoin' },
-                            name: { type: 'string', example: 'Bitcoin' },
-                            symbol: { type: 'string', example: 'BTC' },
-                            transactions: {
-                              type: 'array',
+                            transaction: {
+                              type: 'object',
                               items: {
                                 type: 'object',
-                                required: ['current_price', 'total_volume', 'createdAt'],
                                 properties: {
                                   current_price: { type: 'number', example: 62599 },
                                   total_volume: { type: 'number', example: 25762387797 },
-                                  createdAt: { type: 'string', example: '2024-01-01T00:00:00Z' }
+                                  data_from: { type: 'string', example: '2024-01-01T00:00:00Z' }
                                 }
                               }
                             }
                           },
                           example: {
                             id: 'bitcoin',
-                            name: 'Bitcoin',
-                            symbol: 'BTC',
-                            transactions: [
+                            transaction:
                               {
                                 current_price: 62599,
                                 total_volume: 25762387797,
-                                createdAt: '2024-01-01T00:00:00Z'
+                                data_from: '2024-01-01T00:00:00Z'
                               }
-                            ]
                           },
                         },
                       },
@@ -73,53 +69,48 @@ const swaggerOptions: swaggerJsdoc.Options = {
                   },
                 },
       },
-      '/api/cryptos/{id}': {    //Ruta de prueba para la conexión con MongoDB y la gestión de criptomonedas
+      '/api/crypto/analytics': {
+        get: {
+          summary: 'Retorna el balance total histórico de la cartera',
+          tags: ['Cryptos'],
+          responses: {
+            200: { description: 'Success' },
+            500: { description: 'Internal Server Error' },
+          },
+        }
+      },
+      '/api/crypto/{coin}': {
+        get: {
+          summary: 'Retorna las transacciones históricas de una criptomoneda específica',
+          tags: ['Cryptos'],
+          parameters: [
+            { name: 'coin', in: 'path', required: true, schema: { type: 'string' } },
+          ],
+          responses: {
+            200: { description: 'Success' },
+            404: { description: 'Asset not found' },
+          },
+        }
+      },
+      '/api/crypto/market/{coin}': { 
             get: {
-              summary: 'Get a single asset metrics profile',
+              summary: 'Retorna el market cap y la fluctuación de un criptoactivo específico en las últimas 24 horas',
               tags: ['Cryptos'],
               parameters: [
-                { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'coin', in: 'path', required: true, schema: { type: 'string' } },
               ],
               responses: {
                 200: { description: 'Success' },
                 404: { description: 'Asset not found' },
               },
             },
-            put: {
-              summary: 'Update profile traits data for a matching resource ID',
-              tags: ['Cryptos'],
-              parameters: [
-                { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
-              ],
-              requestBody: {
-                required: true,
-                content: {
-                  'application/json': {
-                    schema: {
-                      type: 'object',
-                      properties: {
-                        name: { type: 'string' },
-                        symbol: { type: 'string' },
-                        price: { type: 'number' },
-                        marketCap: { type: 'number' },
-                      },
-                      example: {
-                          price: 67500.50
-                    }
-                    },
-                  },
-                },
-              },
-              responses: {
-                200: { description: 'Updated successfully' },
-                404: { description: 'Target does not exist' },
-              },
-            },
+          },
+          '/api/crypto/{tx_id}': {
             delete: {
-              summary: 'Purge a crypto record from the store',
+              summary: 'Elimina un registro de transacción de la cartera',
               tags: ['Cryptos'],
               parameters: [
-                { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'tx_id', in: 'path', required: true, schema: { type: 'string' } },
               ],
               responses: {
                 204: { description: 'No content' },

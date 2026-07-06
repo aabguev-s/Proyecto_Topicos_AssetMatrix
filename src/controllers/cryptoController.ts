@@ -8,7 +8,10 @@ export class CryptoController {
 
   create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const result = await this.cryptoService.createCrypto(req.body);
+      if (!req.body || !req.body.id) {
+        throw new Error('El cuerpo de la solicitud debe contener un ID de criptomoneda válido');
+      }
+      const result = await this.cryptoService.createCrypto(req.body.id, req.body.transaction||null);
       res.status(201).json(result);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -27,7 +30,7 @@ export class CryptoController {
   getById = async (req: Request, res: Response): Promise<void> => {
     try {
       // Type assertion added here
-      const result = await this.cryptoService.getCryptoById(req.params.id as string);
+      const result = await this.cryptoService.getCryptoById(req.params.coin as string);
       res.status(200).json(result);
     } catch (error: any) {
       res.status(404).json({ error: error.message });
@@ -46,8 +49,8 @@ export class CryptoController {
 
   delete = async (req: Request, res: Response): Promise<void> => {
     try {
-      await this.cryptoService.deleteCrypto(req.params.id as string);
-      res.status(204).send();
+      const result = await this.cryptoService.deleteCrypto(req.params.tx_id as string);
+      res.status(204).json({ message: 'Se ha eliminado el registro', data: result });
     } catch (error: any) {
       // ESTO ES CRUCIAL: Imprime el error real en tu terminal de VS Code / Docker
       console.error("ERROR REAL OCULTO EN EL BACKEND:", error);

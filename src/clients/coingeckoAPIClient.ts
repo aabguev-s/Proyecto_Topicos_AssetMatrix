@@ -12,6 +12,7 @@ export interface CoinMarketsResponse {
     price_change_percentage_24h?: number;
     circulating_supply?: number;
     total_supply?: number;
+    last_updated?: string;
 }
 
 export class CryptoApiClient extends BaseApiClient {
@@ -40,11 +41,17 @@ export class CryptoApiClient extends BaseApiClient {
         }
 
         const options: RequestInit = {};
+        if (this.apiKey && this.apiKey.trim() !== '') {
+          options.headers = {
+            'x-cg-demo-api-key': this.apiKey
+          };
+        }
         
 
         const raw = await this.request<any[]>(endpoint, options);
 
         if (!raw || !Array.isArray(raw)) {
+            console.error("CoinGecko API Error Context:", raw);
             throw new Error('Respuesta inválida de CoinGecko API');
         }
 
@@ -57,7 +64,8 @@ export class CryptoApiClient extends BaseApiClient {
             total_volume: coin.total_volume || 0,
             price_change_percentage_24h: coin.price_change_percentage_24h || 0,
             circulating_supply: coin.circulating_supply || 0,
-            total_supply: coin.total_supply || 0
+            total_supply: coin.total_supply || 0,
+            last_updated: coin.last_updated || ''
         }));
     }
 }

@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import cryptoRoutes from './routes/cryptoRoutes';
-import stockRoutes from './routes/stockRoutes';
 
 export const createApp = (options: { includeSwagger?: boolean } = {}): express.Application => {
   const { includeSwagger = true } = options;
@@ -16,8 +15,7 @@ export const createApp = (options: { includeSwagger?: boolean } = {}): express.A
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   }
 
-  app.use('/api/stocks', stockRoutes);
-  app.use('/api/cryptos', cryptoRoutes);
+  app.use('/api/crypto', cryptoRoutes);
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error(err.stack);

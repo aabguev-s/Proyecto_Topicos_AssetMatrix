@@ -1,10 +1,9 @@
-//clients/baseAPIClient.ts
-
 export interface ApiClientConfig {
   baseUrl: string;
   apiKey?: string;
 }
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms)); // Existe para lidiar con los limites de request por segundo
 export abstract class BaseApiClient {
   protected baseUrl: string;
   protected apiKey: string;
@@ -22,6 +21,7 @@ export abstract class BaseApiClient {
       if (!response.ok) {
         throw new Error(`Error de la API externa [${response.status}]: ${response.statusText}`);
       }
+      await sleep(2000);
       return await response.json() as T;
     } catch (error) {
       console.error(`Fallo en la conexión con el endpoint ${endpoint}:`, error);
