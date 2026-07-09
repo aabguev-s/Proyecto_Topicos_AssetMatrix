@@ -10,6 +10,8 @@ services:
       - MONGO_URI=mongodb://db:27017/crypto_db
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-demo}
       - NODE_ENV=production
+    env_file:
+      - .env
     depends_on:
       - db
 

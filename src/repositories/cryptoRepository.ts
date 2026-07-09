@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 import { Crypto, ICrypto, ICryptoTransaction, } from '../models/Crypto';
 
 // Métodos no definitivos. Se ajustarán al integrar las API externas.
-
+  
 export class CryptoRepository {
   async create(data: Partial<ICrypto>): Promise<ICrypto> {
     return await Crypto.create(data);
