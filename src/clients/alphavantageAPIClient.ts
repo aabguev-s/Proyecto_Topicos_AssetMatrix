@@ -1,41 +1,6 @@
 import { BaseApiClient } from './baseAPIClient';
-import { alphaVantageSeriesDSchema, alphaVantageSeriesMSchema, alphaVantageSeriesWSchema, alphaVantageMarketStatusSchema, alphaVantageSymbolSearchSchema, alphaVantageQuoteSchema, technicalIndicatorsAlphaVantageRSI, technicalIndicatorsAlphaVantageSMA } from '../schemas/stockTickerSchema'
-
-export interface StockSeriesResponse {
-    symbol: string;
-    lastUpdated: string;
-    timeSeries: { date: string; open: number; high: number; low: number; close: number; volume: number } [];
-}
-
-export interface LatestPriceResponse {
-    symbol: string;
-    open: number;
-    high: number;
-    low: number;
-    price: number;
-    volume: number;
-    latestTradingDay: string;
-    previousClose: number;
-    change: number;
-    changePercent: number;
-}
-
-export interface MarketStatusResponse {
-    marketType: string;
-    region: string;
-    marketOpen: string;
-    marketClose: string;
-    currentStatus: boolean;
-}
-
-export interface SymbolSearchResponse {
-    symbol: string;
-    name: string;
-    type: string;
-    region:string;
-    currency: string;
-    score: number;
-}
+import { alphaVantageSeriesDSchema, alphaVantageSeriesMSchema, alphaVantageSeriesWSchema, alphaVantageMarketStatusSchema, alphaVantageSymbolSearchSchema, alphaVantageQuoteSchema, technicalIndicatorsAlphaVantageRSI, technicalIndicatorsAlphaVantageSMA } from '../schemas/stockTickerSchema';
+import { StockSeriesResponse, LatestPriceResponse, MarketStatusResponse, SymbolSearchResponse } from '../models/StockDataManagement';
 
 export class StockApiClient extends BaseApiClient {
     

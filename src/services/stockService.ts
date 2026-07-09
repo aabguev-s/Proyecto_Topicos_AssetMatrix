@@ -1,52 +1,7 @@
-import { receiveMessageOnPort } from "node:worker_threads";
-import { StockApiClient, StockSeriesResponse, SymbolSearchResponse, LatestPriceResponse, MarketStatusResponse } from "../clients/alphavantageAPIClient";
+import { StockApiClient } from "../clients/alphavantageAPIClient";
 import { IStockTicker, IStockTickerInput } from "../models/StockTicker";
 import { StockTickerRepository } from "../repositories/stockTickerRepository";
-import { alphaVantageSymbolSearchSchema } from "../schemas/stockTickerSchema";
-
-
-export interface TrackingSummaryResponse {
-    searchKeyword: string;
-    totalMatchesFound: number;
-    trackedCount: number;
-    trackedTickers: { symbol: string; name: string }[];
-    ignoredCount: number;
-}
-
-interface SeriesDataReturn {
-    date: string;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    volume: number;
-}
-
-export interface SeriesDataReturnPacked{
-    symbol: string;
-    daily: SeriesDataReturn[];
-    weekly: SeriesDataReturn[];
-    monthly: SeriesDataReturn[];
-}
-
-export interface StockHistory{
-    symbol: string,
-    trends: {
-        weekly:{
-            price: number,
-            performance: {
-                percentageChange: number,
-                isBullish: boolean,         // Está en alta?
-                volatilityStatus: "overbought" | "oversold" | "normal",   // overbougth oversold normal
-                volumeVsAverage: number,
-            },
-            indicators: {
-                rsi: number,
-                sma: number,
-            }
-        }
-    }
-}
+import { StockSeriesResponse, SymbolSearchResponse, SeriesDataReturnPacked, StockHistory, TrackingSummaryResponse } from "../models/StockDataManagement";
 
 export class StockService {
     private stockRepository = new StockTickerRepository();

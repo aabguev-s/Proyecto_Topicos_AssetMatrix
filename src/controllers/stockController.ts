@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { StockService } from '../services/stockService';
-import { SymbolOnlyInput } from '../schemas/stockParamsSchema';
 import { trackingSummaryResponseSchema } from '../schemas/stockTickerSchema';
 
 export class StockController {
