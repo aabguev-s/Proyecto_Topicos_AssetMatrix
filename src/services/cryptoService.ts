@@ -2,7 +2,8 @@
 
 import { CryptoRepository } from '../repositories/cryptoRepository';
 import { ICrypto, ICryptoTransaction } from '../models/Crypto';
-import {CryptoApiClient, CoinMarketsResponse} from '../clients/coingeckoAPIClient';
+import { CryptoApiClient } from '../clients/coingeckoAPIClient';
+import { CoinMarketsResponse } from '../models/CryptoDataManagement';
 
 export class CryptoService {
   private cryptoRepository = new CryptoRepository();
