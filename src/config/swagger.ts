@@ -16,6 +16,88 @@ const swaggerOptions: swaggerJsdoc.Options = {
         ],
         servers: [{ url: 'http://localhost:3000' }],
         paths: {
+            '/api/stock': {
+                get: {
+                    summary: 'Tickers Actualmente en Seguimiento',
+                    tags: ['Stocks'],
+                    responses: {
+                        200: { description: 'Se tienen los siguientes tickers de activos bursatiles en seguimiento.' },
+                        500: { description: 'No hay tickers en seguimiento.' }
+                    }
+                }
+            },
+            '/api/stock/history': {
+                get: {
+                    summary: 'Análisis de las Tendencias Históricas de un Activo Bursátil',
+                    tags: ['Stocks'],
+                    responses: {
+                        200: { description: 'Tendencias Históricas del Activo Bursátil Encontradas.' },
+                        500: { description: 'Error de Conexión con la API Externa.' }
+                    }
+                }
+            },
+            '/api/stock/watch': {
+                post: {
+                    summary: 'Guarda un Activo Bursátil en la Lista de Seguimiento del Usuario',
+                    tags: ['Stocks'],
+                    requestBody: {
+                        required: true,
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        symbol: { type: 'string', example: 'IBM' }
+                                    }
+                                }
+                            }
+                        },
+                    },
+                    responses: {
+                        201: { description: 'Activo Bursátil Guardado.' },
+                        400: { description: 'Error de Validación.' }
+                    }
+                }
+            },
+            '/api/stock/search/{keyword}': {
+                get: {
+                    summary: 'Buscar Áctivos Bursátiles que Encajen con la Keyword Definida',
+                    tags: ['Stocks'],
+                    parameters: [
+                        { name: 'keyword', in: 'path', required: true, schema: { type: 'string' } }
+                    ],
+                    responses: {
+                        200: { description: 'Se encontraron los siguientes activos:' },
+                        500: { description: 'Error de Conexión con la API Externa.' }
+                    }
+                }
+            },
+            '/api/stock/{id}': {
+                delete: {
+                    summary: 'Elimina un Activo Bursátil de la Lista de Seguimiento del Usuario',
+                    tags: ['Stocks'],
+                    parameters: [
+                        { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+                    ],
+                    responses: {
+                        200: { description: 'Activo Bursátil Eliminado.' },
+                        404: { description: 'No encontrado.' }
+                    }
+                }
+            },
+            '/api/stock/{symbol}': {
+                get: {
+                    summary: 'Consulta el Precio y Volumen real de un los Activos Bursátiles',
+                    tags: ['Stocks'],
+                    parameters: [
+                        { name: 'symbol', in: 'path', required: true, schema: { type: 'string' } }
+                    ],
+                    responses: {
+                        200: { description: 'Arreglo de Activos Encontrado.' },
+                        500: { description: 'Error de Conexión con la API Externa.' }
+                    }
+                }
+            },
             '/api/crypto': {
                 get: {
                   summary: 'Retorna la lista completa de cryptomonedas registradas en la cartera',

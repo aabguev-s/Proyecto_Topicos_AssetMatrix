@@ -7,9 +7,8 @@
     "build": "tsc",
     "start": "node server.js",
     "dev": "ts-node-dev --respawn --transpile-only server.ts",
-    "test": "jest",
-    "test:endpoints": "jest tests/endpoints",
-    "test:watch": "jest --watch"
+    "test": "ts-node server.ts"
+
   },
   "keywords": [],
   "author": "",
