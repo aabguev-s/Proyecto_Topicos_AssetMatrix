@@ -15,7 +15,7 @@ export abstract class BaseApiClient {
 
   protected async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-
+    await sleep(2000); // Existe para lidiar con los limites de request por segundo
     try {
       const response = await fetch(url, { ...options });
       // Intentar leer el cuerpo para extraer mensajes del proveedor cuando haya error
@@ -35,7 +35,6 @@ export abstract class BaseApiClient {
         const cleanBodyText = bodyText ? String(bodyText).trim() : '';
         throw new Error(`Error de la API externa [${response.status}]: ${response.statusText}${cleanBodyText ? ' - ' + cleanBodyText : ''}`);
       }
-      await sleep(2000);
       return await response.json() as T;
     } catch (error: any) {
       console.error(`Fallo en la conexión con el endpoint ${endpoint}:`, error);

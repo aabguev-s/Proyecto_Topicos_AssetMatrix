@@ -10,22 +10,34 @@ export class StockService {
     async getTrackedDataForSavedTickersDay(): Promise<StockSeriesResponse[]> {
         const tracked : String[] = await this.stockRepository.getAllCurrentTickersSymbol();
         if (!tracked || tracked.length == 0) return [];
-        const promise = tracked.map((ticker: String) => this.stockApiClient.getGlobalEquityDaily(ticker.valueOf()));
-        return await Promise.all(promise);
+        const results: StockSeriesResponse[] = [];
+        for (const ticker of tracked) {
+            const result = await this.stockApiClient.getGlobalEquityDaily(ticker.valueOf());
+            results.push(result);
+        }
+        return results;
     }
 
     async getTrackedDataForSavedTickersWeek(): Promise<StockSeriesResponse[]> {
-        const tracked : String[] = await this.stockRepository.getAllCurrentTickersSymbol();
+        const tracked = await this.stockRepository.getAllCurrentTickersSymbol();
         if (!tracked || tracked.length == 0) return [];
-        const promise = tracked.map((ticker: String) => this.stockApiClient.getGlobalEquityWeekly(ticker.valueOf()));
-        return await Promise.all(promise);
+        const results: StockSeriesResponse[] = [];
+        for (const ticker of tracked) {
+            const result = await this.stockApiClient.getGlobalEquityWeekly(ticker.valueOf());
+            results.push(result);
+        }
+        return results;
     }
 
     async getTrackedDataForSavedTickersMonth(): Promise<StockSeriesResponse[]> {
         const tracked : String[] = await this.stockRepository.getAllCurrentTickersSymbol();
         if (!tracked || tracked.length == 0) return [];
-        const promise = tracked.map((ticker: String) => this.stockApiClient.getGlobalEquityMonthly(ticker.valueOf()));
-        return await Promise.all(promise);
+        const results: StockSeriesResponse[] = [];
+        for (const ticker of tracked) {
+            const result = await this.stockApiClient.getGlobalEquityMonthly(ticker.valueOf());
+            results.push(result);
+        }
+        return results;
     }
 
     async getDataFromCurrentTracked(): Promise<IStockTicker[]> {
@@ -139,8 +151,16 @@ export class StockService {
     async getHistoricTrendsTracked(): Promise<StockHistory[]>{
         const tracked : String[] = await this.stockRepository.getAllCurrentTickersSymbol();
         const seriesWeek = await this.getTrackedDataForSavedTickersWeek();
-        const sma = await Promise.all(tracked.map((symbol: String) => this.stockApiClient.getTickerSMA(symbol as string)));
-        const rsi = await Promise.all(tracked.map((symbol: String) => this.stockApiClient.getTickerRSI(symbol as string)));
+        const sma = [];
+        for (const symbol of tracked) {
+            const smaData = await this.stockApiClient.getTickerSMA(symbol as string);
+            sma.push(smaData);
+        }
+        const rsi = [];
+        for (const symbol of tracked) {
+            const rsiData = await this.stockApiClient.getTickerRSI(symbol as string);
+            rsi.push(rsiData);
+        }
         const response: StockHistory[] = [];
         for (let i = 0; i < seriesWeek.length; i++){
             let tickerWeek = seriesWeek[i];
