@@ -22,7 +22,7 @@ export declare const checkSymbolAndOptionalIdSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const checkIdOnlySchema: z.ZodObject<{
     params: z.ZodObject<{
-        id: z.ZodOptional<z.ZodString>;
+        id: z.ZodString;
     }, z.core.$strip>;
 }, z.core.$strip>;
 export type SymbolOnlyInput = z.infer<typeof checkSymbolOnlySchema>;

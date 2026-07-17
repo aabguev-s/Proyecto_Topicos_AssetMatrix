@@ -5,17 +5,17 @@ const zod_1 = require("zod");
 // Valida formato id de Mongoose
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 const symbolOnlyParams = zod_1.z.object({
-    symbol: zod_1.z.string().min(1, 'Se requiere de un simbolo').trim().toUpperCase(),
+    symbol: zod_1.z.string().min(3, 'Se requiere un símbolo de al menos 3 caracteres').trim().toUpperCase(),
 });
 const keywordOnlyParams = zod_1.z.object({
-    keyword: zod_1.z.string().trim().toUpperCase(),
+    keyword: zod_1.z.string().min(3, 'Se requiere una palabra clave de al menos 3 caracteres').trim().toUpperCase(),
 });
 const symbolAndOptionalIdParams = zod_1.z.object({
     symbol: zod_1.z.string().min(1, 'Se requiere de un simbolo').trim().toUpperCase(),
     id: zod_1.z.string().regex(objectIdRegex, 'Formato de id inválido').optional(),
 });
 const idOnlyParams = zod_1.z.object({
-    id: zod_1.z.string().regex(objectIdRegex, 'Formato de id inválido').optional(),
+    id: zod_1.z.string().regex(objectIdRegex, 'Formato de id inválido'),
 });
 exports.checkSymbolOnlySchema = zod_1.z.object({
     body: symbolOnlyParams,

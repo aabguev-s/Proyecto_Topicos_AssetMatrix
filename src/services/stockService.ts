@@ -193,6 +193,8 @@ export class StockService {
         const matches = await this.stockApiClient.getSymbolSearch(symbol);
         const trackedTickers: Array<{ symbol: string; name: string }> = [];
         let ignoredCount = 0;
+        let duplicatesCount = 0;
+
         if (matches && matches.length > 0){
             for (const unit of matches) {
                 if (parseFloat(unit.score as any) > 0.6) {
@@ -203,22 +205,29 @@ export class StockService {
                         region: unit.region,
                         currency: unit.currency,
                     };
-                  try {
-                    await this.stockRepository.createTickerTracker(newTicker);
-                    trackedTickers.push({ symbol: unit.symbol, name: unit.name });
-                  } catch (dbError: any) {
-                    if (dbError.code === 11000) {
-                      console.log(`Ticker ${unit.symbol} ya se encuentra bajo seguimiento.`);
-                      trackedTickers.push({ symbol: unit.symbol, name: `${unit.name} (Ya registrado)` });
-                    } else {
-                      throw dbError;
+                    try {
+                        await this.stockRepository.createTickerTracker(newTicker);
+                        trackedTickers.push({ symbol: unit.symbol, name: unit.name });
+                    } catch (dbError: any) {
+                        if (dbError.code === 11000) {
+                          duplicatesCount++;
+                        } else {
+                          throw dbError;
+                        }
                     }
-                  }
                 } else {
-                  ignoredCount++;
+                    ignoredCount++;
                 }
             }
         }
+
+        if (trackedTickers.length === 0) {
+            if (duplicatesCount > 0) {
+                throw new Error(`Ya se encuentra siguiendo el activo ${symbol}.`);
+            }
+            throw new Error(`No se han encontrado activos bursátiles con el simbolo ${symbol}.`);
+        }
+
         return {
             searchKeyword: symbol,
             totalMatchesFound: matches.length,

@@ -124,14 +124,19 @@ export class StockController {
                 return;
             }
             const raw = await this.stockService.startTrackingTicker(symbol);
-            if (this.checkNoEmptyResponse(res, raw, `No se han encontrado activos bursátiles con el simbolo ${symbol}.`, 406)) return;
+            if (this.checkNoEmptyResponse(res, raw, `No se han encontrado activos bursátiles con el simbolo ${symbol}.`)) return;
             const processed = trackingSummaryResponseSchema.parse(raw);
-            res.status(201).json({ 
-                success: true, 
-                message: `Se ha comenzado a seguir el activo: ${symbol}` ,
-                data: processed,
-            });
+            res.status(201).json({ success: true, message: `Se ha comenzado a seguir el activo: ${symbol}`, data: processed });
         } catch (error: any) {
+            const msg = String(error.message || '');
+            if (msg.includes('Ya se encuentra siguiendo')) {
+                res.status(409).json({ error: msg });
+                return;
+            }
+            if (msg.includes('No se han encontrado activos bursátiles')) {
+                res.status(404).json({ error: msg });
+                return;
+            }
             next(error);
         }
     };
@@ -172,11 +177,8 @@ export class StockController {
             const id = req.params.id as string;
             const deletedTicker = await this.stockService.removeTickerFromTracking(id);
             if (this.checkNoEmptyResponse(res, deletedTicker, `No hay ticker con id: : ${id}`)) return;
-        res.status(200).json({
-            status: 'success',
-            message: `Se ha removido del segumiento el ticker de id: ${id}.`,
-            data: deletedTicker
-          });
+            // Consistent delete success: 204 No Content
+            res.status(204).send();
         } catch (error) {
             next(error);
         }

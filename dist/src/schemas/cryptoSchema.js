@@ -5,6 +5,7 @@ exports.getCryptoParamsSchema = exports.updateCryptoSchema = exports.createCrypt
 // @ts-nocheck
 const zod_1 = require("zod");
 // schemas/cryptoSchema.ts
+const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 exports.getCoinParamsSchema = zod_1.z.object({
     params: zod_1.z.object({
         coin: zod_1.z.string({ error: 'El id de la moneda es requerido' }).min(2).toLowerCase(),
@@ -12,7 +13,7 @@ exports.getCoinParamsSchema = zod_1.z.object({
 });
 exports.gettx_idParamsSchema = zod_1.z.object({
     params: zod_1.z.object({
-        tx_id: zod_1.z.string({ error: 'El id de la transacción en la base de datos es requerido' }),
+        tx_id: zod_1.z.string({ error: 'El id de la transacción en la base de datos es requerido' }).regex(objectIdRegex, 'Formato de id inválido'),
     }),
 });
 exports.createTransactionSchema = zod_1.z.object({

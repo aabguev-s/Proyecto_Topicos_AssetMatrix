@@ -177,6 +177,7 @@ class StockService {
         const matches = await this.stockApiClient.getSymbolSearch(symbol);
         const trackedTickers = [];
         let ignoredCount = 0;
+        let duplicatesCount = 0;
         if (matches && matches.length > 0) {
             for (const unit of matches) {
                 if (parseFloat(unit.score) > 0.6) {
@@ -193,8 +194,7 @@ class StockService {
                     }
                     catch (dbError) {
                         if (dbError.code === 11000) {
-                            console.log(`Ticker ${unit.symbol} ya se encuentra bajo seguimiento.`);
-                            trackedTickers.push({ symbol: unit.symbol, name: `${unit.name} (Ya registrado)` });
+                            duplicatesCount++;
                         }
                         else {
                             throw dbError;
@@ -205,6 +205,12 @@ class StockService {
                     ignoredCount++;
                 }
             }
+        }
+        if (trackedTickers.length === 0) {
+            if (duplicatesCount > 0) {
+                throw new Error(`Ya se encuentra siguiendo el activo ${symbol}.`);
+            }
+            throw new Error(`No se han encontrado activos bursátiles con el simbolo ${symbol}.`);
         }
         return {
             searchKeyword: symbol,

@@ -20,7 +20,7 @@ class BaseApiClient {
                     const contentType = response.headers.get('content-type') || '';
                     if (contentType.includes('application/json')) {
                         const parsed = await response.json();
-                        bodyText = parsed?.error || parsed?.message || JSON.stringify(parsed);
+                        bodyText = parsed?.Note || parsed?.Information || parsed?.['Error Message'] || parsed?.error || parsed?.message || parsed?.note || JSON.stringify(parsed);
                     }
                     else {
                         bodyText = await response.text();
@@ -29,14 +29,16 @@ class BaseApiClient {
                 catch (e) {
                     bodyText = null;
                 }
-                throw new Error(`Error de la API externa [${response.status}]: ${response.statusText}${bodyText ? ' - ' + bodyText : ''}`);
+                const cleanBodyText = bodyText ? String(bodyText).trim() : '';
+                throw new Error(`Error de la API externa [${response.status}]: ${response.statusText}${cleanBodyText ? ' - ' + cleanBodyText : ''}`);
             }
             await sleep(2000);
             return await response.json();
         }
         catch (error) {
             console.error(`Fallo en la conexión con el endpoint ${endpoint}:`, error);
-            throw error;
+            const errorMessage = error?.message ? String(error.message) : 'Error desconocido de la API externa';
+            throw new Error(`Error de la API externa: ${errorMessage}`);
         }
     }
 }

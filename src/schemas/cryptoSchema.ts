@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 // schemas/cryptoSchema.ts
 
+const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 export const getCoinParamsSchema = z.object({
   params: z.object({
@@ -14,7 +15,7 @@ export const getCoinParamsSchema = z.object({
 
 export const gettx_idParamsSchema = z.object({
   params: z.object({
-    tx_id: z.string({error: 'El id de la transacción en la base de datos es requerido'}),
+    tx_id: z.string({ error: 'El id de la transacción en la base de datos es requerido' }).regex(objectIdRegex, 'Formato de id inválido'),
   }),
 })
 

@@ -14,12 +14,27 @@ class CryptoController {
             res.status(201).json(result);
         }
         catch (error) {
-            res.status(400).json({ error: error.message });
+            const msg = String(error.message || '');
+            if (msg.includes('No se pudo obtener información') || msg.includes('CoinGecko') || msg.includes("No se encontraron datos")) {
+                res.status(404).json({ error: msg });
+                return;
+            }
+            if (msg.includes('El cuerpo de la solicitud')) {
+                res.status(400).json({ error: msg });
+                return;
+            }
+            // Fallback a 500 para errores inesperados
+            res.status(500).json({ error: msg });
+            return;
         }
     };
     getAll = async (req, res) => {
         try {
             const result = await this.cryptoService.getAllCryptos();
+            if (!result || (Array.isArray(result) && result.length === 0)) {
+                res.status(404).json({ error: 'No hay criptomonedas registradas.' });
+                return;
+            }
             res.status(200).json(result);
         }
         catch (error) {
@@ -49,24 +64,28 @@ class CryptoController {
     delete = async (req, res) => {
         try {
             const result = await this.cryptoService.deleteCrypto(req.params.tx_id);
-            res.status(204).json({ message: 'Se ha eliminado el registro', data: result });
+            // 204 No Content (success without body)
+            res.status(204).send();
         }
         catch (error) {
-            // ESTO ES CRUCIAL: Imprime el error real en tu terminal de VS Code / Docker
             console.error("ERROR REAL OCULTO EN EL BACKEND:", error);
-            res.status(404).json({
-                error: 'Cryptocurrency target does not exist',
-                debugMessage: error.message // Te lo mando también en el JSON para que lo leas en Swagger
-            });
+            const msg = String(error.message || 'Cryptocurrency target does not exist');
+            if (msg.includes('formato válido') || msg.includes('Formato de id inválido')) {
+                res.status(400).json({ error: msg });
+                return;
+            }
+            res.status(404).json({ error: msg });
         }
     };
     getAnalytics = async (req, res) => {
         try {
             const result = await this.cryptoService.getPortfolioAnalytics();
-            res.status(200).json({
-                success: true,
-                data: result
-            });
+            // Si no hay registros, devolver 404
+            if (result && typeof result.totalTransactionsProcessed === 'number' && result.totalTransactionsProcessed === 0) {
+                res.status(404).json({ error: 'No hay registros en la base de datos.' });
+                return;
+            }
+            res.status(200).json({ success: true, data: result });
         }
         catch (error) {
             res.status(500).json({ error: error.message });

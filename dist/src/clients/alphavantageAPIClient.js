@@ -13,10 +13,7 @@ class StockApiClient extends baseAPIClient_1.BaseApiClient {
     validateResponse(raw) {
         if (raw && (raw.Information || raw.Note || raw["Error Message"])) {
             console.error("Alpha Vantage API Warning/Error Context:", raw);
-            // If AlphaVantage returns a Note about call frequency or token limits, forward that exact message.
             const providerMessage = raw.Information || raw.Note || raw["Error Message"];
-            // Normalize common 'apikey' or 'call frequency' phrases to Spanish-friendly message if needed,
-            // but keep provider text so the user can see the exact reason.
             throw new Error(`Alpha Vantage API ha fallado: ${providerMessage}`);
         }
     }

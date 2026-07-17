@@ -4,11 +4,11 @@ import { z } from 'zod';
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const symbolOnlyParams = z.object({
-    symbol: z.string().min(1, 'Se requiere de un simbolo').trim().toUpperCase(),
+    symbol: z.string().min(3, 'Se requiere un símbolo de al menos 3 caracteres').trim().toUpperCase(),
 });
 
 const keywordOnlyParams = z.object({
-    keyword: z.string().trim().toUpperCase(),
+    keyword: z.string().min(3, 'Se requiere una palabra clave de al menos 3 caracteres').trim().toUpperCase(),
 })
 
 const symbolAndOptionalIdParams = z.object({
@@ -17,7 +17,7 @@ const symbolAndOptionalIdParams = z.object({
 });
 
 const idOnlyParams = z.object({
-    id: z.string().regex(objectIdRegex, 'Formato de id inválido').optional(),
+    id: z.string().regex(objectIdRegex, 'Formato de id inválido'),
 });
 
 export const checkSymbolOnlySchema = z.object({
