@@ -1,5 +1,3 @@
-//clients/coingeckoAPIClient.ts
-
 import { BaseApiClient, ApiClientConfig } from './baseAPIClient';
 import { CoinMarketsResponse } from '../models/CryptoDataManagement';
 

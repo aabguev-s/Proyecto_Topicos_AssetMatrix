@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { StockController } from '../controllers/stockController';
-import { validate } from '../middlewares/validateMiddleware';
+import { validate } from '../utils/validateSchema';
 import { checkIdOnlySchema, checkSymbolOnlySchema, checkSymbolOnlySchemaParams, checkKeywordOnlySchema } from '../schemas/stockParamsSchema';
 
 const router = Router();

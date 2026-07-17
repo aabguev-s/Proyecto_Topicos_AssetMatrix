@@ -1,8 +1,4 @@
-//models/Crypto.ts
-
 import { Schema, model, Document } from 'mongoose';
-
-// Esquema no definitivo. Se ajustará al integrar las API externas.
 
 export interface ICryptoTransaction {
   _id?: any;

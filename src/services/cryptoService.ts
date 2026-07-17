@@ -1,5 +1,3 @@
-//services/cryptoService.ts
-
 import { CryptoRepository } from '../repositories/cryptoRepository';
 import { ICrypto, ICryptoTransaction } from '../models/Crypto';
 import { CryptoApiClient } from '../clients/coingeckoAPIClient';
@@ -153,8 +151,6 @@ export class CryptoService {
       marketSummary
     };
   }
-
-// services/cryptoService.ts
 
   async getCoinQuote(coinId: string) {
     // getCoinMarkets espera el "id" de CoinGecko (ej: 'bitcoin'), no el ticker ('BTC')

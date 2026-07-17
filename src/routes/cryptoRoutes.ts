@@ -2,8 +2,8 @@
 
 import { Router } from 'express';
 import { CryptoController } from '../controllers/cryptoController';
-import { validate } from '../middlewares/validateMiddleware';
-import { createTransactionSchema, getCryptoParamsSchema, getCoinParamsSchema, gettx_idParamsSchema} from '../schemas/cryptoSchema';
+import { validate } from '../utils/validateSchema';
+import { createTransactionSchema, getCoinParamsSchema, gettx_idParamsSchema} from '../schemas/cryptoSchema';
 
 const router = Router();
 const controller = new CryptoController();

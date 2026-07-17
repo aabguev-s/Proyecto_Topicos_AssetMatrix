@@ -46,16 +46,6 @@ export class StockController {
         }
     };
 
-    getDataFromCurrentTracked = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const result = await this.stockService.getDataFromCurrentTracked();
-            if (this.checkNoEmptyResponse(res, result, `No se han encontrado tickers en seguimiento.`, )) return;
-            res.status(200).json(result);
-        } catch (error : any) {
-            next(error);
-        }
-    };
-
     getCurrentTickerData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const symbol = req.params.symbol as string;

@@ -1,9 +1,4 @@
-//schemas/cryptoSchemas.ts
-
-// @ts-nocheck
 import { z } from 'zod';
-
-// schemas/cryptoSchema.ts
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
