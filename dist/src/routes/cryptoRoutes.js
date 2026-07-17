@@ -7,26 +7,16 @@ const validateMiddleware_1 = require("../middlewares/validateMiddleware");
 const cryptoSchema_1 = require("../schemas/cryptoSchema");
 const router = (0, express_1.Router)();
 const controller = new cryptoController_1.CryptoController();
-/**
- * @openapi
- * /api/cryptos/market/{coin}:
- *   get:
- *     summary: Get market cap and 24h fluctuation for a crypto asset
- *     tags: [Cryptos]
- *     parameters:
- *       - in: path
- *         name: coin
- *         required: true
- *         schema:
- *           type: string
- *         example: bitcoin
- *         description: CoinGecko coin id (no es el ticker, ej. usar "bitcoin" y no "BTC")
- *     responses:
- *       200:
- *         description: Datos de mercado obtenidos con éxito
- *       404:
- *         description: Activo no encontrado en CoinGecko
- */
+router.route('/')
+    .get(controller.getAll);
+router.route('/portfolio')
+    .post((0, validateMiddleware_1.validate)(cryptoSchema_1.createTransactionSchema), controller.create);
+router.route('/analytics')
+    .get(controller.getAnalytics);
+router.route('/:coin')
+    .get((0, validateMiddleware_1.validate)(cryptoSchema_1.getCoinParamsSchema), controller.getById);
+router.route('/:tx_id')
+    .delete((0, validateMiddleware_1.validate)(cryptoSchema_1.gettx_idParamsSchema), controller.delete);
 router.route('/market/:coin')
     .get((0, validateMiddleware_1.validate)(cryptoSchema_1.getCoinParamsSchema), controller.getMarketData);
 exports.default = router;

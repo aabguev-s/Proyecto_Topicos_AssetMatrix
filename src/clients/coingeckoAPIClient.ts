@@ -36,7 +36,20 @@ export class CryptoApiClient extends BaseApiClient {
         }
         
 
-        const raw = await this.request<any[]>(endpoint, options);
+        let raw: any;
+        try {
+            raw = await this.request<any[]>(endpoint, options);
+        } catch (err: any) {
+            // Si el proveedor devolvió un mensaje, request ya lo incluye en el error.message
+            console.error('CoinGecko client request failed:', err.message || err);
+            throw err;
+        }
+
+        if (raw && (raw.error || raw.message)) {
+            console.error("CoinGecko API Error Context:", raw);
+            const providerMessage = raw.error || raw.message;
+            throw new Error(`CoinGecko API ha fallado: ${providerMessage}`);
+        }
 
         if (!raw || !Array.isArray(raw)) {
             console.error("CoinGecko API Error Context:", raw);

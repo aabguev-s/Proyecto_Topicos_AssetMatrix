@@ -25,6 +25,12 @@ app.use('/api/stock', stockRoutes);
 // Manejador de Errores Global
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
+  // If the error originates from an external API client (AlphaVantage / CoinGecko),
+  // prefer returning the original message so the user sees token-limit or provider hints.
+  const msg = err && err.message ? String(err.message) : null;
+  if (msg && (msg.includes('Alpha Vantage') || msg.includes('CoinGecko') || msg.includes('API ha fallado') || msg.includes('Respuesta inválida') || msg.includes('Error de la API externa'))) {
+    return res.status(500).json({ error: msg });
+  }
   res.status(500).json({ error: 'Something went wrong internally.' });
 });
 

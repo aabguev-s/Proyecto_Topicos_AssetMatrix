@@ -21,8 +21,27 @@ class CryptoApiClient extends baseAPIClient_1.BaseApiClient {
             endpoint += `&ids=${ids}`;
         }
         const options = {};
-        const raw = await this.request(endpoint, options);
+        if (this.apiKey && this.apiKey.trim() !== '') {
+            options.headers = {
+                'x-cg-demo-api-key': this.apiKey
+            };
+        }
+        let raw;
+        try {
+            raw = await this.request(endpoint, options);
+        }
+        catch (err) {
+            // Si el proveedor devolvió un mensaje, request ya lo incluye en el error.message
+            console.error('CoinGecko client request failed:', err.message || err);
+            throw err;
+        }
+        if (raw && (raw.error || raw.message)) {
+            console.error("CoinGecko API Error Context:", raw);
+            const providerMessage = raw.error || raw.message;
+            throw new Error(`CoinGecko API ha fallado: ${providerMessage}`);
+        }
         if (!raw || !Array.isArray(raw)) {
+            console.error("CoinGecko API Error Context:", raw);
             throw new Error('Respuesta inválida de CoinGecko API');
         }
         return raw.map((coin) => ({
@@ -34,7 +53,8 @@ class CryptoApiClient extends baseAPIClient_1.BaseApiClient {
             total_volume: coin.total_volume || 0,
             price_change_percentage_24h: coin.price_change_percentage_24h || 0,
             circulating_supply: coin.circulating_supply || 0,
-            total_supply: coin.total_supply || 0
+            total_supply: coin.total_supply || 0,
+            last_updated: coin.last_updated || ''
         }));
     }
 }

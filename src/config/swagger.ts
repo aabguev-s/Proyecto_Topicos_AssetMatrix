@@ -15,14 +15,72 @@ const swaggerOptions: swaggerJsdoc.Options = {
             { name: 'Cryptos', description: 'Activos criptográficos' },
         ],
         servers: [{ url: 'http://localhost:3000' }],
+        components: {
+            responses: {
+                BadRequest: {
+                    description: 'Solicitud inválida (400).',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    error: { type: 'string', example: 'Se requiere de un símbolo válido.' }
+                                }
+                            }
+                        }
+                    }
+                },
+                NotFound: {
+                    description: 'Recurso no encontrado (404).',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    error: { type: 'string', example: 'No se han encontrado tickers en seguimiento.' }
+                                }
+                            }
+                        }
+                    }
+                },
+                Conflict: {
+                    description: 'Conflicto por recurso duplicado (409).',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    error: { type: 'string', example: 'El activo ya se encuentra bajo seguimiento.' }
+                                }
+                            }
+                        }
+                    }
+                },
+                ExternalAPIError: {
+                    description: 'Error de conexión o respuesta inválida desde API externa (500).',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    error: { type: 'string', example: 'Alpha Vantage API ha fallado: API call frequency exceeded. Reintente más tarde.' }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         paths: {
             '/api/stock': {
                 get: {
                     summary: 'Tickers Actualmente en Seguimiento',
                     tags: ['Stocks'],
                     responses: {
-                        200: { description: 'Se tienen los siguientes tickers de activos bursatiles en seguimiento.' },
-                        500: { description: 'No hay tickers en seguimiento.' }
+                        200: { description: 'Se tienen los siguientes tickers de activos bursátiles en seguimiento.' },
+                        400: { $ref: '#/components/responses/BadRequest' },
+                        404: { $ref: '#/components/responses/NotFound' },
+                        500: { $ref: '#/components/responses/ExternalAPIError' }
                     }
                 }
             },
@@ -32,7 +90,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     tags: ['Stocks'],
                     responses: {
                         200: { description: 'Tendencias Históricas del Activo Bursátil Encontradas.' },
-                        500: { description: 'Error de Conexión con la API Externa.' }
+                        400: { $ref: '#/components/responses/BadRequest' },
+                        404: { $ref: '#/components/responses/NotFound' },
+                        500: { $ref: '#/components/responses/ExternalAPIError' }
                     }
                 }
             },
@@ -55,7 +115,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     },
                     responses: {
                         201: { description: 'Activo Bursátil Guardado.' },
-                        400: { description: 'Error de Validación.' }
+                        400: { $ref: '#/components/responses/BadRequest' },
+                        409: { $ref: '#/components/responses/Conflict' },
+                        500: { $ref: '#/components/responses/ExternalAPIError' }
                     }
                 }
             },
@@ -68,7 +130,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     ],
                     responses: {
                         200: { description: 'Se encontraron los siguientes activos:' },
-                        500: { description: 'Error de Conexión con la API Externa.' }
+                        400: { $ref: '#/components/responses/BadRequest' },
+                        404: { $ref: '#/components/responses/NotFound' },
+                        500: { $ref: '#/components/responses/ExternalAPIError' }
                     }
                 }
             },
@@ -81,7 +145,8 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     ],
                     responses: {
                         200: { description: 'Activo Bursátil Eliminado.' },
-                        404: { description: 'No encontrado.' }
+                        400: { $ref: '#/components/responses/BadRequest' },
+                        404: { $ref: '#/components/responses/NotFound' }
                     }
                 }
             },
@@ -94,7 +159,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
                     ],
                     responses: {
                         200: { description: 'Arreglo de Activos Encontrado.' },
-                        500: { description: 'Error de Conexión con la API Externa.' }
+                        400: { $ref: '#/components/responses/BadRequest' },
+                        404: { $ref: '#/components/responses/NotFound' },
+                        500: { $ref: '#/components/responses/ExternalAPIError' }
                     }
                 }
             },
@@ -104,6 +171,8 @@ const swaggerOptions: swaggerJsdoc.Options = {
                   tags: ['Cryptos'],
                   responses: {
                     200: { description: 'Success' },
+                    400: { $ref: '#/components/responses/BadRequest' },
+                    404: { $ref: '#/components/responses/NotFound' }
                   },
                 },
               },
@@ -147,7 +216,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
                   },
                   responses: {
                     201: { description: 'Created successfully' },
-                    400: { description: 'Validation failure' },
+                    400: { $ref: '#/components/responses/BadRequest' },
+                    409: { $ref: '#/components/responses/Conflict' },
+                    500: { $ref: '#/components/responses/ExternalAPIError' }
                   },
                 },
       },
@@ -157,6 +228,7 @@ const swaggerOptions: swaggerJsdoc.Options = {
           tags: ['Cryptos'],
           responses: {
             200: { description: 'Success' },
+            400: { $ref: '#/components/responses/BadRequest' },
             500: { description: 'Internal Server Error' },
           },
         }
@@ -170,7 +242,8 @@ const swaggerOptions: swaggerJsdoc.Options = {
           ],
           responses: {
             200: { description: 'Success' },
-            404: { description: 'Asset not found' },
+            400: { $ref: '#/components/responses/BadRequest' },
+            404: { $ref: '#/components/responses/NotFound' },
           },
         }
       },
@@ -183,7 +256,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
               ],
               responses: {
                 200: { description: 'Success' },
-                404: { description: 'Asset not found' },
+                400: { $ref: '#/components/responses/BadRequest' },
+                404: { $ref: '#/components/responses/NotFound' },
+                500: { $ref: '#/components/responses/ExternalAPIError' }
               },
             },
           },
@@ -196,7 +271,8 @@ const swaggerOptions: swaggerJsdoc.Options = {
               ],
               responses: {
                 204: { description: 'No content' },
-                404: { description: 'Target does not exist' },
+                400: { $ref: '#/components/responses/BadRequest' },
+                404: { $ref: '#/components/responses/NotFound' },
               },
             },
             },
