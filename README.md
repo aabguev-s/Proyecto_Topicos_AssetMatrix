@@ -41,7 +41,7 @@ AssetMatrix es una API REST desarrollada en Node.js (Express) y TypeScript pensa
 - src/clients/: clientes para consumir APIs externas.
 - src/config/: configuración de base de datos y documentación Swagger.
 - src/schemas/: validaciones con Zod.
-- src/middlewares/: middleware de validación y transformación.
+- src/utils/: funciones de validación y transformació de uso general.
 
 ## 4. Requisitos previos
 
