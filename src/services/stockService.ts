@@ -222,7 +222,7 @@ export class StockService {
         let ignoredCount = 0;
         let duplicatesCount = 0;
 
-        if (matches && matches.length > 0){
+        if (matches && matches.length > 0) {
             for (const unit of matches) {
                 if (parseFloat(unit.score as any) > 0.6) {
                     const newTicker: IStockTickerInput = {
@@ -232,14 +232,21 @@ export class StockService {
                         region: unit.region,
                         currency: unit.currency,
                     };
+
+                    const existingTicker = await this.stockRepository.getTickerBySymbol(unit.symbol);
+                    if (existingTicker) {
+                        duplicatesCount++;
+                        continue;
+                    }
+
                     try {
                         await this.stockRepository.createTickerTracker(newTicker);
                         trackedTickers.push({ symbol: unit.symbol, name: unit.name });
                     } catch (dbError: any) {
-                        if (dbError.code === 11000) {
-                          duplicatesCount++;
+                        if (dbError?.code === 11000 || dbError?.name === 'MongoServerError') {
+                            duplicatesCount++;
                         } else {
-                          throw dbError;
+                            throw dbError;
                         }
                     }
                 } else {

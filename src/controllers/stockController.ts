@@ -127,6 +127,10 @@ export class StockController {
                 res.status(404).json({ error: msg });
                 return;
             }
+            if (error?.code === 11000 || error?.name === 'MongoServerError') {
+                res.status(409).json({ error: 'Ya se encuentra siguiendo el activo.' });
+                return;
+            }
             next(error);
         }
     };

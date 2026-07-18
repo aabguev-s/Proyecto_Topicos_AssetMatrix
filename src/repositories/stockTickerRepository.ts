@@ -6,6 +6,10 @@ export class StockTickerRepository {
         return await StockTicker.create(data);
     }
 
+    async getTickerBySymbol(symbol: string): Promise<IStockTicker | null> {
+        return await StockTicker.findOne({ symbol }).exec();
+    }
+
     async removeTickerTracker(id: string, symbol?: string): Promise<IStockTicker | null>{
         let result: IStockTicker | null;
         if (symbol) {
