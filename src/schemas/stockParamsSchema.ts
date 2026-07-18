@@ -4,7 +4,7 @@ import { z } from 'zod';
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const symbolOnlyParams = z.object({
-    symbol: z.string().min(3, 'Se requiere un símbolo de al menos 3 caracteres').trim().toUpperCase(),
+    symbol: z.string().min(2, 'Se requiere un símbolo de al menos 2 caracteres').trim().toUpperCase(),
 });
 
 const keywordOnlyParams = z.object({
